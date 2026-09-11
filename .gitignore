@@ -26,3 +26,6 @@ report/**/*.log
 Thumbs.db
 *~
 .playwright-mcp/
+
+# The compiled report is kept once, at the repo root (SteamDataAnalysisProject.pdf)
+report/*.pdf
