@@ -19,6 +19,7 @@
 \usepackage{titlesec}
 \usepackage{caption}
 \usepackage{fancyhdr}
+\usepackage{pdfpages}
 \usepackage[hidelinks]{hyperref}
 
 \definecolor{secblue}{HTML}{2E74B5}
@@ -69,6 +70,9 @@
 \newcommand{\code}[1]{\texttt{#1}}
 
 \begin{document}
+
+% cover page (made in Cover-Pages/, Word + PDF)
+\includepdf[pages=1]{cover.pdf}
 
 \tableofcontents
 \newpage

@@ -10,7 +10,7 @@
   replicated join over the full review table.
 - Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
 
-Full lab report (LaTeX, 47 pages): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
+Full lab report (LaTeX, 48 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
 
 ### Problem Statement :-
 
