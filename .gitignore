@@ -29,3 +29,4 @@ Thumbs.db
 
 # The compiled report is kept once, at the repo root (SteamDataAnalysisProject.pdf)
 report/*.pdf
+!report/cover.pdf
