@@ -11,6 +11,7 @@
 - Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
 
 Full lab report (LaTeX, 49 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
+
 Black-and-white edition for mono printers (same content, black-on-white screenshots and charts):
 [`SteamDataAnalysisProject-print.pdf`](SteamDataAnalysisProject-print.pdf)
 
