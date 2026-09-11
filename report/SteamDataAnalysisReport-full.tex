@@ -1,0 +1,715 @@
+% FULL 49-page edition of the report (the version first submitted to GitHub, commit 39be49f).
+% The short 21-page edition is SteamDataAnalysisReport.tex.
+% Steam Game Recommendations — Data Analysis using Apache Hadoop and Pig
+% Lab report (CSE 4346). Compile from this folder:  tectonic SteamDataAnalysisReport.tex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+                            ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\setmonofont{Inconsolatazi4}[Extension=.otf, UprightFont=*-Regular, BoldFont=*-Bold, Scale=0.92]
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[normalem]{ulem}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{pdfpages}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{secblue}{HTML}{2E74B5}
+\definecolor{jobred}{HTML}{C00000}
+\definecolor{subgreen}{HTML}{00A650}
+\definecolor{kw}{RGB}{127,0,85}
+\definecolor{cm}{RGB}{63,127,95}
+\definecolor{st}{RGB}{42,0,255}
+\definecolor{codebg}{HTML}{F7F7F5}
+\definecolor{rule}{HTML}{D9D9D6}
+
+% Black-and-white print edition: SteamDataAnalysisReport-print.tex defines \printversion
+% and points \shotdir / \chartdir at the black-on-white screenshots and charts.
+\providecommand{\shotdir}{../screenshots}
+\providecommand{\chartdir}{../visualizations}
+\ifdefined\printversion
+  \definecolor{secblue}{HTML}{000000}
+  \definecolor{jobred}{HTML}{000000}
+  \definecolor{subgreen}{HTML}{000000}
+  \definecolor{kw}{HTML}{000000}
+  \definecolor{cm}{HTML}{555555}
+  \definecolor{st}{HTML}{333333}
+  \definecolor{codebg}{HTML}{FFFFFF}
+  \definecolor{rule}{HTML}{777777}
+\fi
+
+\titleformat{\section}{\needspace{6\baselineskip}\color{secblue}\LARGE\bfseries}{\thesection.}{0.5em}{\uline}
+\titleformat{\subsection}{\needspace{6\baselineskip}\color{jobred}\Large\bfseries}{\thesubsection}{0.5em}{\uline}
+\titleformat{\subsubsection}{\needspace{5\baselineskip}\color{subgreen}\large\bfseries}{}{0em}{}
+\titlespacing*{\subsubsection}{0pt}{1.4ex plus .4ex}{0.6ex}
+\setcounter{tocdepth}{2}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em, topsep=0.3em}
+\captionsetup{font=small, labelfont=bf, skip=4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gray}Steam Data Analysis using Hadoop}
+\fancyhead[R]{\small\color{gray}CSE 4346 — Big Data Analysis Laboratory}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\lstdefinelanguage{Pig}{
+  morekeywords={LOAD,USING,AS,FILTER,BY,IS,NOT,NULL,GROUP,ALL,FOREACH,GENERATE,ORDER,DESC,
+                LIMIT,FLATTEN,STORE,INTO,JOIN,COUNT,SUM,SPRINTF,PigStorage,int,chararray,double},
+  sensitive=false, morecomment=[l]{--}, morestring=[b]'
+}
+\lstset{
+  basicstyle=\ttfamily\footnotesize, keywordstyle=\color{kw}\bfseries, commentstyle=\color{cm},
+  stringstyle=\color{st}, backgroundcolor=\color{codebg}, frame=single, rulecolor=\color{rule},
+  framesep=4pt, xleftmargin=4pt, xrightmargin=4pt, breaklines=true, breakatwhitespace=true,
+  columns=fullflexible, keepspaces=true, showstringspaces=false, tabsize=4, upquote=true,
+  numbers=left, numberstyle=\tiny\color{gray}, numbersep=6pt, aboveskip=0.6em, belowskip=0.6em
+}
+\lstset{language=Java}
+
+% \shot{file}{caption}: a terminal or browser screenshot, never taller than the page
+\newcommand{\shot}[2]{%
+  \begin{figure}[H]\centering
+  \includegraphics[width=\linewidth,height=0.80\textheight,keepaspectratio]{#1}
+  \caption{#2}\end{figure}}
+\newcommand{\code}[1]{\texttt{#1}}
+% a Pig script is short: never split it across two pages
+\newcommand{\pigscript}[1]{\par\noindent\begin{minipage}{\linewidth}
+  \subsubsection*{Script}\lstinputlisting[language=Pig]{#1}\end{minipage}\par}
+
+\begin{document}
+
+% cover page (made in Cover-Pages/, Word + PDF)
+\includepdf[pages=1]{cover.pdf}
+
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------------------------
+\section{Problem Statement}
+
+Analyse the Steam game-recommendations dataset with Apache Hadoop (MapReduce) and Apache Pig,
+across its game and review tables, to find which games and rating groups draw the most reviews and
+the most hours of play on the Steam platform.
+
+The work is split the way the course asks for it:
+
+\begin{itemize}
+  \item \textbf{Three MapReduce programs in Java}, each built on a different MapReduce design
+        pattern — summarization, data organization (binning) and a reduce-side join.
+  \item \textbf{Five Apache Pig Latin scripts} that ask ranking and grouping questions of the same
+        data, including a map-side replicated join over the full 41-million-row review table.
+\end{itemize}
+
+Everything was run on a single-node Hadoop cluster, and every job result in this report was read back
+out of HDFS after the job that produced it had finished.
+
+% ---------------------------------------------------------------------------
+\section{Dataset Description}
+
+\textbf{Dataset:} Game Recommendations on Steam (Kaggle)\\
+\url{https://www.kaggle.com/datasets/antonkozyriev/game-recommendations-on-steam}
+
+The dataset is a crawl of the Steam store and its user reviews. It comes as three related CSV
+tables and one JSON file of game descriptions. \code{app\_id} links a review to its game and
+\code{user\_id} links it to its author. The analyses below use \code{games.csv} and
+\code{recommendations.csv}; \code{users.csv} is described for completeness.
+
+\begin{table}[H]\centering
+\begin{tabular}{lrrl}
+\toprule
+File & Size & Rows & One row is \\
+\midrule
+\code{recommendations.csv} & 2.0 GB & 41,154,794 & one user review of one game \\
+\code{users.csv}           & 193 MB & 14,306,064 & one Steam user \\
+\code{games.csv}           & 4.9 MB & 50,872     & one game on the Steam store \\
+\code{games\_metadata.json} & 18 MB & 50,872    & description and tags of a game (not used) \\
+\bottomrule
+\end{tabular}
+\caption{Files in the dataset (row counts exclude the header line).}
+\end{table}
+
+All three CSV files are comma separated, start with a header row and contain no quoted fields.
+Before any job was written I checked that every row has the expected number of columns
+(13 for games, 3 for users, 8 for recommendations); none failed, so the files needed no cleaning
+step beyond skipping the header line.
+
+\subsection*{games.csv}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{rlll X}
+\toprule
+\# & Field & Type & Example & Meaning \\
+\midrule
+0  & \code{app\_id}         & int     & 13500 & Steam application id (key) \\
+1  & \code{title}           & string  & Prince of Persia: Warrior Within™ & game title \\
+2  & \code{date\_release}   & date    & 2008-11-21 & release date \\
+3–5 & \code{win, mac, linux} & boolean & true, false, false & supported platforms \\
+6  & \code{rating}          & string  & Very Positive & Steam's review summary label (9 values) \\
+7  & \code{positive\_ratio} & int     & 84 & \% of Steam reviews that are positive \\
+8  & \code{user\_reviews}   & int     & 2199 & number of reviews on Steam \\
+9  & \code{price\_final}    & float   & 9.99 & price in USD after discount \\
+10 & \code{price\_original} & float   & 9.99 & price in USD before discount \\
+11 & \code{discount}        & float   & 0.0 & discount in \% \\
+12 & \code{steam\_deck}     & boolean & true & runs on the Steam Deck \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{users.csv}
+\begin{table}[H]\centering\small
+\begin{tabular}{rlll}
+\toprule
+\# & Field & Type & Meaning \\
+\midrule
+0 & \code{user\_id}  & int & anonymised user id (key) \\
+1 & \code{products}  & int & number of games the user owns \\
+2 & \code{reviews}   & int & number of reviews the user has written \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{recommendations.csv}
+\begin{table}[H]\centering\small
+\begin{tabular}{rllll}
+\toprule
+\# & Field & Type & Example & Meaning \\
+\midrule
+0 & \code{app\_id}          & int     & 975370     & game reviewed $\rightarrow$ \code{games.app\_id} \\
+1 & \code{helpful}          & int     & 0          & users who marked the review helpful \\
+2 & \code{funny}            & int     & 0          & users who marked the review funny \\
+3 & \code{date}             & date    & 2022-12-12 & review date \\
+4 & \code{is\_recommended}  & boolean & true       & thumbs up or thumbs down \\
+5 & \code{hours}            & float   & 36.3       & hours the reviewer had played the game \\
+6 & \code{user\_id}         & int     & 51580      & reviewer $\rightarrow$ \code{users.user\_id} \\
+7 & \code{review\_id}       & int     & 0          & unique review id \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \code{rating} column is the label Steam shows on a store page. It takes nine values, and it is
+the category field used for grouping and binning throughout this project, the same role the video
+category played in the YouTube lab.
+
+% ---------------------------------------------------------------------------
+\section{Summary of Data Analysis}
+
+The following MapReduce design patterns are implemented:
+
+\begin{enumerate}
+  \item \textbf{Summarization} — numerical summarization with a custom \code{Writable} and a combiner.
+  \item \textbf{Data Organization} — binning with \code{MultipleOutputs}.
+  \item \textbf{Join Patterns} — reduce-side join with \code{MultipleInputs}.
+\end{enumerate}
+
+The following MapReduce analyses are performed on the dataset:
+
+\begin{enumerate}
+  \item \textbf{Review summary per game} — number of reviews, recommended share, total, average and
+        maximum hours played, and helpful votes for every game (\emph{summarization}).
+  \item \textbf{Binning games by rating} — every game written to one of nine output files, one per
+        Steam rating label (\emph{data organization}).
+  \item \textbf{Games joined with their reviews} — each game's title and rating put next to its review
+        count and total hours played (\emph{reduce-side join}).
+\end{enumerate}
+
+The following Pig analyses are performed on the dataset:
+
+\begin{enumerate}
+  \item Top 5 rating groups by number of games
+  \item Top 10 most reviewed games
+  \item Top 10 most reviewed games in each rating group
+  \item Top 10 games by total hours played
+  \item Top 10 games by total hours played in each rating group
+\end{enumerate}
+
+% ---------------------------------------------------------------------------
+\section{Environment and Loading the Data}
+
+\begin{table}[H]\centering
+\begin{tabular}{ll}
+\toprule
+Component & Version / setting \\
+\midrule
+Operating system & Pop!\_OS Linux, 8 CPU cores, 16 GB RAM \\
+Apache Hadoop & 3.4.1, pseudo-distributed (single node), \code{fs.defaultFS = hdfs://localhost:9000} \\
+HDFS & replication 1, block size 128 MB \\
+Apache Pig & 0.18.0, run in \code{mapreduce} mode on YARN \\
+Java & OpenJDK 11.0.31 \\
+YARN memory & NodeManager 5120 MB; map 768 MB, reduce 1024 MB, AM 768 MB containers \\
+\bottomrule
+\end{tabular}
+\caption{Software used.}
+\end{table}
+
+The laptop had only about 2 GB of RAM free, and with Hadoop's default settings YARN would try to run
+eight 1 GB task containers at once. The NodeManager was therefore capped at 5 GB and the task
+containers made smaller in \code{yarn-site.xml} and \code{mapred-site.xml}, so the jobs run a few
+tasks at a time instead of pushing the machine into swap.
+
+\subsubsection*{Starting the cluster}
+The cluster is started daemon by daemon, followed by the JobHistory server. \code{jps} shows all six
+Hadoop daemons running:
+
+\shot{\shotdir/01_cluster_jps.png}{All six Hadoop daemons running (\code{jps}).}
+\shot{\shotdir/02_versions.png}{Hadoop, Pig and Java versions.}
+
+\subsubsection*{Loading the dataset into HDFS}
+The three CSV files are copied into the \code{/steam} directory in HDFS. The 2 GB review file is
+split into 16 blocks of 128 MB, and \code{hdfs fsck} reports the directory as healthy.
+
+\shot{\shotdir/03_hdfs_put.png}{Copying the dataset into HDFS (11.5 seconds).}
+\shot{\shotdir/04_hdfs_ls.png}{The dataset in HDFS: 1.9 GB of reviews stored as 16 blocks.}
+
+\subsubsection*{Building the MapReduce jobs}
+Each job is compiled against the local Hadoop classpath and packed into its own jar by
+\code{scripts/build.sh}:
+
+\lstinputlisting[language=bash]{../scripts/build.sh}
+\shot{\shotdir/05_build_jars.png}{The three jars built.}
+
+% ---------------------------------------------------------------------------
+\section{Map Reduce Analysis}
+
+\subsection{Review Summary per Game}
+\textbf{Returns, for every game, how many reviews it received, how many recommend it, how long its
+reviewers played it and how many helpful votes its reviews collected} (\code{GameReviewSummary}).
+
+This is the \textbf{numerical summarization} pattern. The mapper reads one review at a time and emits
+the game's \code{app\_id} with a small tuple holding a count of one, a 1 or 0 for ``recommended'',
+the hours played and the helpful votes. Every field of the tuple is additive — a count, a sum or a
+maximum — so partial results can be merged in any order. That is what makes a \textbf{combiner}
+valid here: each mapper merges its own tuples before the shuffle, and the reducer finishes the job
+with exactly the same code.
+
+This analysis consists of:
+\begin{enumerate}
+  \item \textbf{Driver Class} — sets up the job, and registers the reducer as the combiner as well.
+  \item \textbf{Mapper Class} — emits \code{app\_id} of type \code{Text} and a tuple of custom type
+        \code{ReviewStatsTuple}.
+  \item \textbf{Reducer Class} — merges all tuples of one game and emits \code{app\_id} with the
+        final \code{ReviewStatsTuple}; also used as the combiner.
+  \item \textbf{Tuple Class} — custom \code{Writable} holding reviews, recommended, total hours,
+        maximum hours and helpful votes.
+\end{enumerate}
+
+\subsubsection*{Driver Class}
+\lstinputlisting{../GameReviewSummary/src/main/java/steam/summary/GameReviewSummary.java}
+\subsubsection*{Mapper Class}
+\lstinputlisting{../GameReviewSummary/src/main/java/steam/summary/ReviewMapper.java}
+\subsubsection*{Reducer Class (also the Combiner)}
+\lstinputlisting{../GameReviewSummary/src/main/java/steam/summary/ReviewReducer.java}
+\subsubsection*{Tuple Class}
+\lstinputlisting{../GameReviewSummary/src/main/java/steam/summary/ReviewStatsTuple.java}
+
+\subsubsection*{Execution}
+\shot{\shotdir/MR1_execution.png}{Review summary job running over the 2 GB review file.}
+\shot{\shotdir/MR1_counters.png}{Job counters of the review summary job.}
+
+The job read all 41,154,794 reviews in 15 input splits and finished in 2 minutes 15 seconds. The
+counters show the combiner at work: the mappers produced 41,154,794 records, but after combining
+only 90,766 of them reached the reducer — roughly 450 times less data through the shuffle. The
+reducer wrote one line for each of the \textbf{37,610 games} that have at least one review.
+
+\subsubsection*{Output}
+\shot{\shotdir/MR1_output.png}{The ten games with the most reviews. Columns: app\_id, reviews,
+recommended, positive \%, total hours, average hours, maximum hours, helpful votes.}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{rlrrrr}
+\toprule
+app\_id & Game & Reviews & Positive \% & Avg.\ hours & Helpful votes \\
+\midrule
+440     & Team Fortress 2                  & 319,492 & 92.3 & 318.7 & 521,978 \\
+252490  & Rust                             & 270,684 & 83.6 & 343.4 & 771,227 \\
+1091500 & Cyberpunk 2077                   & 226,414 & 74.5 & 102.2 & 1,189,869 \\
+730     & Counter-Strike: Global Offensive & 219,737 & 84.8 & 429.0 & 1,910,071 \\
+570     & Dota 2                           & 216,914 & 79.2 & 429.1 & 842,346 \\
+444090  & Paladins®                        & 204,176 & 84.0 & 139.8 & 188,983 \\
+292030  & The Witcher® 3: Wild Hunt        & 204,166 & 94.6 & 154.4 & 813,793 \\
+377160  & Fallout 4                        & 196,789 & 81.6 & 204.0 & 899,972 \\
+374320  & DARK SOULS™ III                  & 190,157 & 92.9 & 170.7 & 529,674 \\
+431960  & Wallpaper Engine                 & 190,129 & 98.2 & 102.8 & 802,753 \\
+\bottomrule
+\end{tabular}
+\caption{The same ten games with their titles looked up from \code{games.csv}.}
+\end{table}
+
+The maximum-hours column reads 999.9 for almost every popular game. That is not a bug in the job: the
+\code{hours} field in the source data never goes above 1,000, so for any game with a large player
+base at least one reviewer sits at the cap.
+
+% ---------------------------------------------------------------------------
+\subsection{Binning Games by Rating}
+\textbf{Performs binning on the Steam rating label, writing every game into one output file per
+bin.} The program is \code{BinningByRating}.
+
+This is the \textbf{binning} pattern from the data organization family. The job is map-only: each
+mapper decides which bin a record belongs to and writes it straight to that bin's file through
+\code{MultipleOutputs}, so there is no shuffle, no sort and no reducer. The bin name comes from the
+\code{rating} column with the spaces removed (``Very Positive'' becomes \code{VeryPositive-m-00000}),
+and a counter per bin records how many games landed in it. \code{LazyOutputFormat} stops Hadoop from
+also writing an empty default \code{part-m-00000} file.
+
+This analysis consists of:
+\begin{enumerate}
+  \item \textbf{Driver Class} — sets zero reducers and registers the \code{bins} named output.
+  \item \textbf{Mapper Class} — uses \code{MultipleOutputs} to write each game to the file of its rating
+        bin, and counts the games per bin.
+\end{enumerate}
+
+\subsubsection*{Driver Class}
+\lstinputlisting{../BinningByRating/src/main/java/steam/binning/BinningByRating.java}
+\subsubsection*{Mapper Class}
+\lstinputlisting{../BinningByRating/src/main/java/steam/binning/BinningMapper.java}
+
+\subsubsection*{Execution}
+\shot{\shotdir/MR2_execution.png}{Binning job running on \code{games.csv}.}
+\shot{\shotdir/MR2_counters.png}{Job counters, including the nine \code{Bins} counters.}
+
+One map task read the 50,873 lines of \code{games.csv} (50,872 games and the header). The
+\code{Map output records} counter is 0 because \code{MultipleOutputs} writes to the bin files
+directly instead of going through the normal map output. The \code{Bins} counters are the real
+result: the nine of them add up to 50,872, so every game was placed in exactly one bin.
+
+\subsubsection*{Output}
+\shot{\shotdir/MR2_output.png}{The nine bin files in HDFS, and the smallest bin
+(Overwhelmingly Negative, 14 games) printed in full.}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{lrr}
+\toprule
+Bin (rating) & Games & Share \\
+\midrule
+Positive                & 13,502 & 26.5\% \\
+Very Positive           & 13,139 & 25.8\% \\
+Mixed                   & 12,157 & 23.9\% \\
+Mostly Positive         &  8,738 & 17.2\% \\
+Mostly Negative         &  1,849 &  3.6\% \\
+Overwhelmingly Positive &  1,110 &  2.2\% \\
+Negative                &    303 &  0.6\% \\
+Very Negative           &     60 &  0.1\% \\
+Overwhelmingly Negative &     14 &  0.03\% \\
+\midrule
+Total                   & 50,872 & 100\% \\
+\bottomrule
+\end{tabular}
+\caption{Games per bin, from the job's \code{Bins} counters.}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\subsection{Games Joined with their Reviews}
+\textbf{Returns each game's title and rating together with how many people reviewed it and how many
+hours they played it} (\code{GameReviewJoin}).
+
+This is a \textbf{reduce-side join}. The two inputs have different layouts, so each gets its own
+mapper through \code{MultipleInputs}. Both mappers use \code{app\_id} as the key and tag their values —
+\code{G} for a game record, \code{R} for review data — so that the reducer, which receives
+everything for one \code{app\_id} together, can tell the two sides apart and put them back together.
+
+Sending all 41 million reviews through the shuffle one by one would be slow, so the review mapper
+uses \textbf{in-mapper combining}: it keeps a running total per game in a hash map and emits a single
+\code{R} record per game when its input split is done. The join is an inner join — games nobody
+reviewed, and reviews whose game is missing from \code{games.csv}, are dropped and counted.
+
+This analysis consists of:
+\begin{enumerate}
+  \item \textbf{Driver Class} — registers the two inputs, each with its own mapper, and one reducer.
+  \item \textbf{Game Mapper} — emits \code{app\_id} and \code{"G, title, rating"}.
+  \item \textbf{Recommendation Mapper} — adds up reviews, recommendations and hours per game in memory
+        and emits \code{app\_id} and \code{"R, reviews, recommended, hours"}.
+  \item \textbf{Join Reducer} — matches the \code{G} record with the \code{R} records of the same game and
+        emits the joined line.
+\end{enumerate}
+
+\subsubsection*{Driver Class}
+\lstinputlisting{../GameReviewJoin/src/main/java/steam/join/GameReviewJoin.java}
+\subsubsection*{Game Mapper}
+\lstinputlisting{../GameReviewJoin/src/main/java/steam/join/GameMapper.java}
+\subsubsection*{Recommendation Mapper}
+\lstinputlisting{../GameReviewJoin/src/main/java/steam/join/RecommendationMapper.java}
+\subsubsection*{Join Reducer}
+\lstinputlisting{../GameReviewJoin/src/main/java/steam/join/JoinReducer.java}
+
+\subsubsection*{Execution}
+\shot{\shotdir/MR3_execution.png}{Join job running over both inputs.}
+\shot{\shotdir/MR3_counters.png}{Job counters of the join, including the \code{Join} counters.}
+
+The job read 16 input splits — 15 from the review file and one from \code{games.csv} — and finished in
+1 minute 15 seconds, faster than the summary job even though it reads the same 2 GB. The reason is
+in the counters: in-mapper combining cut the map output from 41 million records to 141,638, so the
+shuffle had almost nothing to move. The \code{Join} counters show 37,610 games matched and 13,262 games
+with no reviews at all; no review pointed to a game missing from \code{games.csv}.
+
+\subsubsection*{Output}
+\shot{\shotdir/MR3_output.png}{The ten games with the most hours played. Columns: app\_id,
+title, rating, reviews, positive \%, total hours, average hours per reviewer.}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrr}
+\toprule
+Game & Rating & Reviews & Total hours & Avg.\ hours \\
+\midrule
+Team Fortress 2                   & Very Positive & 319,492 & 101,809,977.6 & 318.7 \\
+Counter-Strike: Global Offensive  & Very Positive & 219,737 &  94,260,307.3 & 429.0 \\
+Dota 2                            & Very Positive & 216,914 &  93,072,785.4 & 429.1 \\
+Rust                              & Very Positive & 270,684 &  92,944,004.6 & 343.4 \\
+Tom Clancy's Rainbow Six® Siege   & Very Positive & 189,603 &  68,445,823.3 & 361.0 \\
+Destiny 2                         & Very Positive & 185,527 &  62,504,172.8 & 336.9 \\
+Hearts of Iron IV                 & Very Positive & 143,187 &  53,086,631.1 & 370.8 \\
+ARK: Survival Evolved             & Very Positive & 159,736 &  46,720,359.4 & 292.5 \\
+Warframe                          & Very Positive & 127,812 &  46,450,175.3 & 363.4 \\
+Grand Theft Auto V                & Very Positive & 163,909 &  46,170,394.5 & 281.7 \\
+\bottomrule
+\end{tabular}
+\caption{Top 10 games by total hours played, from the joined output.}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Pig Analysis}
+
+All five scripts read the dataset straight from HDFS with \code{PigStorage(',')} and drop the header row
+with \code{FILTER \dots\ BY app\_id IS NOT NULL} — the header's \code{app\_id} is the text
+``app\_id'', which fails the cast to \code{int} and becomes null. Results are stored tab separated
+under \code{/steam/pig/}; a tab is used instead of a pipe because 104 game titles contain a
+\code{|} character.
+
+Every ranking sorts \emph{inside} a nested \code{FOREACH} block (\code{ORDER} then \code{LIMIT}) rather
+than with a top-level \code{ORDER BY}. For the ``in each rating group'' queries this is what the
+question needs — a separate top 10 per group — and for the overall rankings it avoids the
+sampling job that a top-level \code{ORDER BY} starts.
+
+Each run ends with a Pig warning, \code{FIELD\_DISCARDED\_TYPE\_CONVERSION\_FAILED}. It counts the
+fields of the header rows that could not be cast to a number, and it is exactly how the header is
+filtered out, so it is expected rather than a data problem.
+
+\subsection{Top 5 Rating Groups}
+\textbf{Returns the five Steam rating labels that the most games carry.}
+
+The games are grouped by \code{rating} and counted; the nine counts are then gathered into a single
+group (\code{GROUP \dots\ ALL}) so they can be sorted together and cut to five. Pig compiles the script
+into two MapReduce jobs — the count, which runs with a combiner, and the ranking.
+
+\pigscript{../PigAnalysis/scripts/top5Ratings.pig}
+\subsubsection*{Execution}
+\shot{\shotdir/Pig1_execution.png}{\code{top5Ratings.pig} starting in \code{mapreduce} mode.}
+\shot{\shotdir/Pig1_result.png}{End of the run: \code{Success!}, the two jobs, 50,873 records read and 5 stored.}
+\subsubsection*{Output}
+\shot{\shotdir/Pig1_output.png}{Top 5 rating groups.}
+The five counts are identical to the first five bins of the MapReduce binning job (Section 5.2).
+\subsubsection*{Visualization}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig1_top5_ratings.png}
+\caption{Top 5 rating groups by number of games.}\end{figure}
+
+\subsection{Top 10 Most Reviewed Games}
+\textbf{Returns the ten games with the most reviews on Steam} (the \code{user\_reviews} column).
+
+\pigscript{../PigAnalysis/scripts/top10Reviewed.pig}
+\subsubsection*{Execution}
+\shot{\shotdir/Pig2_execution.png}{\code{top10Reviewed.pig} starting.}
+\shot{\shotdir/Pig2_result.png}{End of the run: one MapReduce job, 10 records stored in 48 seconds.}
+\subsubsection*{Output}
+\shot{\shotdir/Pig2_output.png}{Top 10 most reviewed games. Columns: app\_id, title, rating,
+positive ratio, user reviews.}
+
+Counter-Strike: Global Offensive has 7,494,460 reviews on Steam — more than three times the next game,
+PUBG: BATTLEGROUNDS (2,217,226). This column is Steam's own total for the whole store, which is
+why its order differs from MapReduce job 1: that job counts only the reviews present in
+\code{recommendations.csv}, where Team Fortress 2 comes first.
+
+\subsubsection*{Visualization}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig2_top10_reviewed.png}
+\caption{Top 10 most reviewed games.}\end{figure}
+
+\subsection{Top 10 Most Reviewed Games in each Rating Group}
+\textbf{Returns the ten most reviewed games inside each of the nine rating groups.}
+
+This is the nested-\code{FOREACH} pattern: after \code{GROUP BY rating}, the block runs once per group,
+sorts that group's bag by \code{user\_reviews}, keeps ten and \code{FLATTEN}s them back into rows. The
+whole script runs as a single MapReduce job.
+
+\pigscript{../PigAnalysis/scripts/top10ReviewedByRating.pig}
+\subsubsection*{Execution}
+\shot{\shotdir/Pig3_execution.png}{\code{top10ReviewedByRating.pig} starting.}
+\shot{\shotdir/Pig3_result.png}{End of the run: 90 records stored — nine groups of ten.}
+\subsubsection*{Output}
+\shot{\shotdir/Pig3_output.png}{Top 10 most reviewed games in every rating group.}
+
+Two things stand out. The ``Positive'' and ``Negative'' groups never go above 49 reviews: Steam only
+gives those plain labels to games with 10–49 reviews, and a game that collects more moves up to
+``Very'' or ``Overwhelmingly''. And the most reviewed game in the Overwhelmingly Negative group is
+Overwatch® 2 with 181,198 reviews — a very large game can sit in the worst group.
+
+\subsubsection*{Visualization}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{\chartdir/pig3_top10_reviewed_by_rating.png}
+\caption{Top 10 most reviewed games in each rating group. Each panel has its own scale.}\end{figure}
+
+\subsection{Top 10 Games by Total Hours Played}
+\textbf{Returns the ten games whose reviewers played them for the most hours in total.}
+
+This script reads the full 2 GB review table. It adds up the hours per game with
+\code{GROUP BY app\_id} and \code{SUM}, then brings in each game's title and rating with a
+\textbf{replicated join}: \code{games.csv} is small enough to be copied to every mapper, so the join
+happens on the map side without a second shuffle. The hours stay numeric for the sort and are only
+formatted with \code{SPRINTF} for the output.
+
+Pig turns the script into a chain of three MapReduce jobs (visible in the Job Stats of the
+screenshot below): a map-only job that prepares \code{games.csv} for the replicated join, one job with
+15 maps and 3 reducers that groups the 41 million reviews and performs the join, and a final job
+that ranks the result.
+
+\pigscript{../PigAnalysis/scripts/top10Played.pig}
+\subsubsection*{Execution}
+\shot{\shotdir/Pig4_execution.png}{\code{top10Played.pig} starting.}
+\shot{\shotdir/Pig4_result.png}{End of the run: 41,154,795 review lines and 50,873 game lines
+read, 10 records stored, in 4 minutes 35 seconds.}
+\subsubsection*{Output}
+\shot{\shotdir/Pig4_output.png}{Top 10 games by total hours played. Columns: app\_id, title,
+rating, reviews, total hours.}
+
+The list is identical to the top ten of the MapReduce join (Section 5.3) — same games, same order,
+same review counts and the same hours to one decimal place. The two tools took very different routes
+to it: the hand-written join finished in 1 minute 15 seconds, the Pig script in 4 minutes 35 seconds,
+mostly because Pig runs three jobs one after another while the Java version does everything in one
+job and shrinks its shuffle with in-mapper combining.
+
+\subsubsection*{Visualization}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig4_top10_played.png}
+\caption{Top 10 games by total hours played by reviewers.}\end{figure}
+
+\subsection{Top 10 Games by Total Hours Played in each Rating Group}
+\textbf{Returns the ten most played games inside each rating group.}
+
+Same first half as the previous script — sum the hours per game and replicated-join the titles and
+ratings — followed by the nested sort of Section 6.3, grouped by rating.
+
+\pigscript{../PigAnalysis/scripts/top10PlayedByRating.pig}
+\subsubsection*{Execution}
+\shot{\shotdir/Pig5_execution.png}{\code{top10PlayedByRating.pig} starting.}
+\shot{\shotdir/Pig5_result.png}{End of the run: 87 records stored, in 4 minutes 3 seconds.}
+\subsubsection*{Output}
+\shot{\shotdir/Pig5_output.png}{Top 10 most played games in every rating group.}
+
+The script stored 87 rows, not 90. The Overwhelmingly Negative group has 14 games, but only 7 of them
+have any review in \code{recommendations.csv}, so that group can only return seven.
+
+\subsubsection*{Visualization}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{\chartdir/pig5_top10_played_by_rating.png}
+\caption{Top 10 games by total hours played in each rating group. Each panel has its own scale.}\end{figure}
+
+% ---------------------------------------------------------------------------
+\section{Monitoring the Jobs}
+
+Hadoop's web interfaces were kept open while the jobs ran.
+
+\shot{\shotdir/web_yarn_applications.png}{YARN ResourceManager (\code{localhost:8088}): all 19
+applications finished with status SUCCEEDED.}
+
+The 19 applications are the three MapReduce jobs and the MapReduce jobs Pig generated for the five
+scripts. Scripts 4 and 5 appear twice: they were run once, then run again after changing only how the
+hours are printed (from Pig's default scientific notation to one decimal place). The second runs are
+the ones in this report.
+
+\shot{\shotdir/web_jobhistory.png}{MapReduce JobHistory server (\code{localhost:19888}) with the
+map and reduce task counts of every job.}
+\shot{\shotdir/web_namenode_overview.png}{NameNode overview (\code{localhost:9870}).}
+\shot{\shotdir/web_hdfs_steam.png}{The \code{/steam} directory in the HDFS browser: the three input
+files and the output directories of every job.}
+
+% ---------------------------------------------------------------------------
+\section{Verification}
+
+Several results can be checked against each other or against the raw file, because different jobs
+reach the same number by different routes. All checks passed.
+
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{X r r c}
+\toprule
+Check & Expected & Produced & \\
+\midrule
+Reviews read by the summary job = rows of \code{recommendations.csv} & 41,154,794 & 41,154,794 & pass \\
+Reviews summed over the summary output = over the join output & 41,154,794 & 41,154,794 & pass \\
+Games in the summary output = games matched by the join & 37,610 & 37,610 & pass \\
+Joined games + games with no reviews = rows of \code{games.csv} & 50,872 & 37,610 + 13,262 & pass \\
+Nine bins of the binning job add up to all games & 50,872 & 50,872 & pass \\
+Bin sizes = counts computed directly from \code{games.csv} & 9 values & all 9 equal & pass \\
+Pig top 5 rating groups = the five largest bins & 5 values & all 5 equal & pass \\
+Pig top 10 by hours = MapReduce join top 10 (ids, reviews, hours) & 10 rows & identical & pass \\
+Pig-5 rows = 8 groups $\times$ 10 + 7 reviewed Overwhelmingly Negative games & 87 & 87 & pass \\
+\bottomrule
+\end{tabularx}
+\caption{Cross-checks between jobs.}
+\end{table}
+
+The bin sizes were also counted outside Hadoop, straight from the CSV, before any job was run, and
+the Pig-versus-MapReduce comparison of the top ten was done with \code{diff} on the two outputs.
+
+% ---------------------------------------------------------------------------
+\section{What the Data Says}
+
+\textbf{Steam reviews are mostly positive.} 85.8\% of the 41 million reviews recommend the game, and
+71.7\% of all games carry one of the four positive labels. Only 2,226 games (4.4\%) carry a negative
+one, and just 14 are Overwhelmingly Negative.
+
+\textbf{Attention is concentrated in a few games.} Of the 50,872 games, 37,610 appear in the review
+data at all, and half of those have 39 reviews or fewer. The ten most reviewed games — 0.03\% of the
+reviewed games — hold 5.4\% of all reviews.
+
+\textbf{The most played games are long-running multiplayer titles.} Team Fortress 2, Counter-Strike:
+Global Offensive, Dota 2 and Rust each passed 90 million hours of play among their reviewers, and the
+average Counter-Strike or Dota 2 reviewer had played about 429 hours. Across all reviews the players
+had logged 4.14 billion hours.
+
+\textbf{Popular does not mean well rated.} PUBG: BATTLEGROUNDS is the second most reviewed game on
+Steam but is rated Mixed, with 57\% positive reviews; Overwatch® 2 has 181,198 reviews and is
+Overwhelmingly Negative. At the other end, Wallpaper Engine is 98.2\% positive in the review data.
+
+\textbf{A rating label is partly a volume label.} The Positive and Negative groups top out at 49
+reviews, because Steam reserves the ``Very'' and ``Overwhelmingly'' labels for games with more reviews.
+Grouping by \code{rating} therefore mixes two things — how good the reviews are and how many there are
+— which is worth keeping in mind before comparing the groups directly.
+
+% ---------------------------------------------------------------------------
+\section{Conclusion}
+
+A 2.2 GB, three-table Steam dataset was loaded into HDFS and analysed on a single-node Hadoop 3.4.1
+cluster with three Java MapReduce programs and five Pig Latin scripts, all of which completed
+successfully.
+
+The three MapReduce programs each show a different design pattern. The summarization job shows how a
+custom \code{Writable} and a combiner shrink 41 million map outputs to under a hundred thousand before
+the shuffle. The binning job shows a map-only job writing many outputs at once. The reduce-side join
+shows two differently shaped inputs meeting in one reducer, and how in-mapper combining makes the
+join over 41 million rows finish in just over a minute.
+
+Pig answered the ranking questions in 15 to 33 lines per script, including a replicated join over the
+full review table, but took roughly three to four times as long as the hand-tuned Java join for the
+same answer. The two tools agreed on every result they share, which is the strongest evidence that
+both are correct.
+
+% ---------------------------------------------------------------------------
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\begin{enumerate}[label={[\arabic*]}]
+  \item A.\ Kozyriev, \emph{Game Recommendations on Steam}, Kaggle dataset.
+        \url{https://www.kaggle.com/datasets/antonkozyriev/game-recommendations-on-steam}
+  \item S.\ Prabhu, \emph{YouTube Data Analysis using Hadoop} (project structure followed).
+        \url{https://github.com/SiddhiPrabhu1995/YouTube-Data-Analysis-using-Hadoop}
+  \item D.\ Miner and A.\ Shook, \emph{MapReduce Design Patterns}, O'Reilly, 2012.
+  \item Apache Hadoop 3.4.1 documentation. \url{https://hadoop.apache.org/docs/r3.4.1/}
+  \item Apache Pig 0.18.0 documentation. \url{https://pig.apache.org/docs/latest/}
+\end{enumerate}
+
+\end{document}

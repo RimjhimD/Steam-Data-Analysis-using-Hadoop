@@ -10,10 +10,14 @@
   replicated join over the full review table.
 - Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
 
-Full lab report (LaTeX, 21 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
+Lab report (LaTeX, 21 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
 
 Black-and-white edition for mono printers (same content, black-on-white screenshots and charts):
 [`SteamDataAnalysisProject-print.pdf`](SteamDataAnalysisProject-print.pdf)
+
+Full-length edition (49 pages — every code listing with imports, every job log screenshot at full length):
+[`SteamDataAnalysisProject-full.pdf`](SteamDataAnalysisProject-full.pdf) ·
+black-and-white: [`SteamDataAnalysisProject-full-print.pdf`](SteamDataAnalysisProject-full-print.pdf)
 
 ### Problem Statement :-
 
@@ -229,8 +233,10 @@ Charts are drawn by [`visualizations/make_charts.py`](visualizations/make_charts
 ├── logs/                    full console output of every command that was run
 ├── report/                  LaTeX source of the report
 ├── scripts/build.sh         compiles the three jars
-├── SteamDataAnalysisProject.pdf
-└── SteamDataAnalysisProject-print.pdf
+├── SteamDataAnalysisProject.pdf             the report, 21 pages (colour)
+├── SteamDataAnalysisProject-print.pdf       the report, 21 pages (black and white)
+├── SteamDataAnalysisProject-full.pdf        full-length edition, 49 pages (colour)
+└── SteamDataAnalysisProject-full-print.pdf  full-length edition, 49 pages (black and white)
 ```
 
 *Rimjhim Dey*
