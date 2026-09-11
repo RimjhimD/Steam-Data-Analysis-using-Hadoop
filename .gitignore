@@ -1,0 +1,28 @@
+# Dataset stays private until submission. Only dataset/README.md is committed.
+dataset/*
+!dataset/README.md
+*.zip
+
+# Java build output
+build/
+*.class
+target/
+
+# Hadoop / Pig local-mode leftovers
+pig_*.log
+derby.log
+
+# LaTeX build files
+*.aux
+report/**/*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*~
+.playwright-mcp/
