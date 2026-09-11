@@ -11,6 +11,8 @@
 - Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
 
 Full lab report (LaTeX, 49 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
+Black-and-white edition for mono printers (same content, black-on-white screenshots and charts):
+[`SteamDataAnalysisProject-print.pdf`](SteamDataAnalysisProject-print.pdf)
 
 ### Problem Statement :-
 
@@ -221,12 +223,13 @@ Charts are drawn by [`visualizations/make_charts.py`](visualizations/make_charts
 ├── PigAnalysis/scripts/     the five Pig scripts
 ├── MR Results/outputFiles/  MapReduce outputs pulled back from HDFS
 ├── Pig Results/outputFiles/ Pig outputs pulled back from HDFS
-├── screenshots/             cluster, job runs, outputs and Hadoop web UIs
-├── visualizations/          charts of the Pig results + the script that draws them
+├── screenshots/             cluster, job runs, outputs and Hadoop web UIs (print/ = black-on-white)
+├── visualizations/          charts of the Pig results + the script that draws them (print/ = greyscale)
 ├── logs/                    full console output of every command that was run
 ├── report/                  LaTeX source of the report
 ├── scripts/build.sh         compiles the three jars
-└── SteamDataAnalysisProject.pdf
+├── SteamDataAnalysisProject.pdf
+└── SteamDataAnalysisProject-print.pdf
 ```
 
 *Rimjhim Dey*

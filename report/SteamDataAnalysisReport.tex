@@ -32,6 +32,21 @@
 \definecolor{codebg}{HTML}{F7F7F5}
 \definecolor{rule}{HTML}{D9D9D6}
 
+% Black-and-white print edition: SteamDataAnalysisReport-print.tex defines \printversion
+% and points \shotdir / \chartdir at the black-on-white screenshots and charts.
+\providecommand{\shotdir}{../screenshots}
+\providecommand{\chartdir}{../visualizations}
+\ifdefined\printversion
+  \definecolor{secblue}{HTML}{000000}
+  \definecolor{jobred}{HTML}{000000}
+  \definecolor{subgreen}{HTML}{000000}
+  \definecolor{kw}{HTML}{000000}
+  \definecolor{cm}{HTML}{555555}
+  \definecolor{st}{HTML}{333333}
+  \definecolor{codebg}{HTML}{FFFFFF}
+  \definecolor{rule}{HTML}{777777}
+\fi
+
 \titleformat{\section}{\needspace{6\baselineskip}\color{secblue}\LARGE\bfseries}{\thesection.}{0.5em}{\uline}
 \titleformat{\subsection}{\needspace{6\baselineskip}\color{jobred}\Large\bfseries}{\thesubsection}{0.5em}{\uline}
 \titleformat{\subsubsection}{\needspace{5\baselineskip}\color{subgreen}\large\bfseries}{}{0em}{}
@@ -246,22 +261,22 @@ tasks at a time instead of pushing the machine into swap.
 The cluster is started daemon by daemon, followed by the JobHistory server. \code{jps} shows all six
 Hadoop daemons running:
 
-\shot{../screenshots/01_cluster_jps.png}{All six Hadoop daemons running (\code{jps}).}
-\shot{../screenshots/02_versions.png}{Hadoop, Pig and Java versions.}
+\shot{\shotdir/01_cluster_jps.png}{All six Hadoop daemons running (\code{jps}).}
+\shot{\shotdir/02_versions.png}{Hadoop, Pig and Java versions.}
 
 \subsubsection*{Loading the dataset into HDFS}
 The three CSV files are copied into the \code{/steam} directory in HDFS. The 2 GB review file is
 split into 16 blocks of 128 MB, and \code{hdfs fsck} reports the directory as healthy.
 
-\shot{../screenshots/03_hdfs_put.png}{Copying the dataset into HDFS (11.5 seconds).}
-\shot{../screenshots/04_hdfs_ls.png}{The dataset in HDFS: 1.9 GB of reviews stored as 16 blocks.}
+\shot{\shotdir/03_hdfs_put.png}{Copying the dataset into HDFS (11.5 seconds).}
+\shot{\shotdir/04_hdfs_ls.png}{The dataset in HDFS: 1.9 GB of reviews stored as 16 blocks.}
 
 \subsubsection*{Building the MapReduce jobs}
 Each job is compiled against the local Hadoop classpath and packed into its own jar by
 \code{scripts/build.sh}:
 
 \lstinputlisting[language=bash]{../scripts/build.sh}
-\shot{../screenshots/05_build_jars.png}{The three jars built.}
+\shot{\shotdir/05_build_jars.png}{The three jars built.}
 
 % ---------------------------------------------------------------------------
 \section{Map Reduce Analysis}
@@ -298,8 +313,8 @@ This analysis consists of:
 \lstinputlisting{../GameReviewSummary/src/main/java/steam/summary/ReviewStatsTuple.java}
 
 \subsubsection*{Execution}
-\shot{../screenshots/MR1_execution.png}{Review summary job running over the 2 GB review file.}
-\shot{../screenshots/MR1_counters.png}{Job counters of the review summary job.}
+\shot{\shotdir/MR1_execution.png}{Review summary job running over the 2 GB review file.}
+\shot{\shotdir/MR1_counters.png}{Job counters of the review summary job.}
 
 The job read all 41,154,794 reviews in 15 input splits and finished in 2 minutes 15 seconds. The
 counters show the combiner at work: the mappers produced 41,154,794 records, but after combining
@@ -307,7 +322,7 @@ only 90,766 of them reached the reducer — roughly 450 times less data through 
 reducer wrote one line for each of the \textbf{37,610 games} that have at least one review.
 
 \subsubsection*{Output}
-\shot{../screenshots/MR1_output.png}{The ten games with the most reviews. Columns: app\_id, reviews,
+\shot{\shotdir/MR1_output.png}{The ten games with the most reviews. Columns: app\_id, reviews,
 recommended, positive \%, total hours, average hours, maximum hours, helpful votes.}
 
 \begin{table}[H]\centering\small
@@ -359,8 +374,8 @@ This analysis consists of:
 \lstinputlisting{../BinningByRating/src/main/java/steam/binning/BinningMapper.java}
 
 \subsubsection*{Execution}
-\shot{../screenshots/MR2_execution.png}{Binning job running on \code{games.csv}.}
-\shot{../screenshots/MR2_counters.png}{Job counters, including the nine \code{Bins} counters.}
+\shot{\shotdir/MR2_execution.png}{Binning job running on \code{games.csv}.}
+\shot{\shotdir/MR2_counters.png}{Job counters, including the nine \code{Bins} counters.}
 
 One map task read the 50,873 lines of \code{games.csv} (50,872 games and the header). The
 \code{Map output records} counter is 0 because \code{MultipleOutputs} writes to the bin files
@@ -368,7 +383,7 @@ directly instead of going through the normal map output. The \code{Bins} counter
 result: the nine of them add up to 50,872, so every game was placed in exactly one bin.
 
 \subsubsection*{Output}
-\shot{../screenshots/MR2_output.png}{The nine bin files in HDFS, and the smallest bin
+\shot{\shotdir/MR2_output.png}{The nine bin files in HDFS, and the smallest bin
 (Overwhelmingly Negative, 14 games) printed in full.}
 
 \begin{table}[H]\centering\small
@@ -427,8 +442,8 @@ This analysis consists of:
 \lstinputlisting{../GameReviewJoin/src/main/java/steam/join/JoinReducer.java}
 
 \subsubsection*{Execution}
-\shot{../screenshots/MR3_execution.png}{Join job running over both inputs.}
-\shot{../screenshots/MR3_counters.png}{Job counters of the join, including the \code{Join} counters.}
+\shot{\shotdir/MR3_execution.png}{Join job running over both inputs.}
+\shot{\shotdir/MR3_counters.png}{Job counters of the join, including the \code{Join} counters.}
 
 The job read 16 input splits — 15 from the review file and one from \code{games.csv} — and finished in
 1 minute 15 seconds, faster than the summary job even though it reads the same 2 GB. The reason is
@@ -437,7 +452,7 @@ shuffle had almost nothing to move. The \code{Join} counters show 37,610 games m
 with no reviews at all; no review pointed to a game missing from \code{games.csv}.
 
 \subsubsection*{Output}
-\shot{../screenshots/MR3_output.png}{The ten games with the most hours played. Columns: app\_id,
+\shot{\shotdir/MR3_output.png}{The ten games with the most hours played. Columns: app\_id,
 title, rating, reviews, positive \%, total hours, average hours per reviewer.}
 
 \begin{table}[H]\centering\small
@@ -487,13 +502,13 @@ into two MapReduce jobs — the count, which runs with a combiner, and the ranki
 
 \pigscript{../PigAnalysis/scripts/top5Ratings.pig}
 \subsubsection*{Execution}
-\shot{../screenshots/Pig1_execution.png}{\code{top5Ratings.pig} starting in \code{mapreduce} mode.}
-\shot{../screenshots/Pig1_result.png}{End of the run: \code{Success!}, the two jobs, 50,873 records read and 5 stored.}
+\shot{\shotdir/Pig1_execution.png}{\code{top5Ratings.pig} starting in \code{mapreduce} mode.}
+\shot{\shotdir/Pig1_result.png}{End of the run: \code{Success!}, the two jobs, 50,873 records read and 5 stored.}
 \subsubsection*{Output}
-\shot{../screenshots/Pig1_output.png}{Top 5 rating groups.}
+\shot{\shotdir/Pig1_output.png}{Top 5 rating groups.}
 The five counts are identical to the first five bins of the MapReduce binning job (Section 5.2).
 \subsubsection*{Visualization}
-\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{../visualizations/pig1_top5_ratings.png}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig1_top5_ratings.png}
 \caption{Top 5 rating groups by number of games.}\end{figure}
 
 \subsection{Top 10 Most Reviewed Games}
@@ -501,10 +516,10 @@ The five counts are identical to the first five bins of the MapReduce binning jo
 
 \pigscript{../PigAnalysis/scripts/top10Reviewed.pig}
 \subsubsection*{Execution}
-\shot{../screenshots/Pig2_execution.png}{\code{top10Reviewed.pig} starting.}
-\shot{../screenshots/Pig2_result.png}{End of the run: one MapReduce job, 10 records stored in 48 seconds.}
+\shot{\shotdir/Pig2_execution.png}{\code{top10Reviewed.pig} starting.}
+\shot{\shotdir/Pig2_result.png}{End of the run: one MapReduce job, 10 records stored in 48 seconds.}
 \subsubsection*{Output}
-\shot{../screenshots/Pig2_output.png}{Top 10 most reviewed games. Columns: app\_id, title, rating,
+\shot{\shotdir/Pig2_output.png}{Top 10 most reviewed games. Columns: app\_id, title, rating,
 positive ratio, user reviews.}
 
 Counter-Strike: Global Offensive has 7,494,460 reviews on Steam — more than three times the next game,
@@ -513,7 +528,7 @@ why its order differs from MapReduce job 1: that job counts only the reviews pre
 \code{recommendations.csv}, where Team Fortress 2 comes first.
 
 \subsubsection*{Visualization}
-\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{../visualizations/pig2_top10_reviewed.png}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig2_top10_reviewed.png}
 \caption{Top 10 most reviewed games.}\end{figure}
 
 \subsection{Top 10 Most Reviewed Games in each Rating Group}
@@ -525,10 +540,10 @@ whole script runs as a single MapReduce job.
 
 \pigscript{../PigAnalysis/scripts/top10ReviewedByRating.pig}
 \subsubsection*{Execution}
-\shot{../screenshots/Pig3_execution.png}{\code{top10ReviewedByRating.pig} starting.}
-\shot{../screenshots/Pig3_result.png}{End of the run: 90 records stored — nine groups of ten.}
+\shot{\shotdir/Pig3_execution.png}{\code{top10ReviewedByRating.pig} starting.}
+\shot{\shotdir/Pig3_result.png}{End of the run: 90 records stored — nine groups of ten.}
 \subsubsection*{Output}
-\shot{../screenshots/Pig3_output.png}{Top 10 most reviewed games in every rating group.}
+\shot{\shotdir/Pig3_output.png}{Top 10 most reviewed games in every rating group.}
 
 Two things stand out. The ``Positive'' and ``Negative'' groups never go above 49 reviews: Steam only
 gives those plain labels to games with 10–49 reviews, and a game that collects more moves up to
@@ -536,7 +551,7 @@ gives those plain labels to games with 10–49 reviews, and a game that collects
 Overwatch® 2 with 181,198 reviews — a very large game can sit in the worst group.
 
 \subsubsection*{Visualization}
-\begin{figure}[H]\centering\includegraphics[width=\linewidth]{../visualizations/pig3_top10_reviewed_by_rating.png}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{\chartdir/pig3_top10_reviewed_by_rating.png}
 \caption{Top 10 most reviewed games in each rating group. Each panel has its own scale.}\end{figure}
 
 \subsection{Top 10 Games by Total Hours Played}
@@ -555,11 +570,11 @@ that ranks the result.
 
 \pigscript{../PigAnalysis/scripts/top10Played.pig}
 \subsubsection*{Execution}
-\shot{../screenshots/Pig4_execution.png}{\code{top10Played.pig} starting.}
-\shot{../screenshots/Pig4_result.png}{End of the run: 41,154,795 review lines and 50,873 game lines
+\shot{\shotdir/Pig4_execution.png}{\code{top10Played.pig} starting.}
+\shot{\shotdir/Pig4_result.png}{End of the run: 41,154,795 review lines and 50,873 game lines
 read, 10 records stored, in 4 minutes 35 seconds.}
 \subsubsection*{Output}
-\shot{../screenshots/Pig4_output.png}{Top 10 games by total hours played. Columns: app\_id, title,
+\shot{\shotdir/Pig4_output.png}{Top 10 games by total hours played. Columns: app\_id, title,
 rating, reviews, total hours.}
 
 The list is identical to the top ten of the MapReduce join (Section 5.3) — same games, same order,
@@ -569,7 +584,7 @@ mostly because Pig runs three jobs one after another while the Java version does
 job and shrinks its shuffle with in-mapper combining.
 
 \subsubsection*{Visualization}
-\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{../visualizations/pig4_top10_played.png}
+\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{\chartdir/pig4_top10_played.png}
 \caption{Top 10 games by total hours played by reviewers.}\end{figure}
 
 \subsection{Top 10 Games by Total Hours Played in each Rating Group}
@@ -580,16 +595,16 @@ ratings — followed by the nested sort of Section 6.3, grouped by rating.
 
 \pigscript{../PigAnalysis/scripts/top10PlayedByRating.pig}
 \subsubsection*{Execution}
-\shot{../screenshots/Pig5_execution.png}{\code{top10PlayedByRating.pig} starting.}
-\shot{../screenshots/Pig5_result.png}{End of the run: 87 records stored, in 4 minutes 3 seconds.}
+\shot{\shotdir/Pig5_execution.png}{\code{top10PlayedByRating.pig} starting.}
+\shot{\shotdir/Pig5_result.png}{End of the run: 87 records stored, in 4 minutes 3 seconds.}
 \subsubsection*{Output}
-\shot{../screenshots/Pig5_output.png}{Top 10 most played games in every rating group.}
+\shot{\shotdir/Pig5_output.png}{Top 10 most played games in every rating group.}
 
 The script stored 87 rows, not 90. The Overwhelmingly Negative group has 14 games, but only 7 of them
 have any review in \code{recommendations.csv}, so that group can only return seven.
 
 \subsubsection*{Visualization}
-\begin{figure}[H]\centering\includegraphics[width=\linewidth]{../visualizations/pig5_top10_played_by_rating.png}
+\begin{figure}[H]\centering\includegraphics[width=\linewidth]{\chartdir/pig5_top10_played_by_rating.png}
 \caption{Top 10 games by total hours played in each rating group. Each panel has its own scale.}\end{figure}
 
 % ---------------------------------------------------------------------------
@@ -597,7 +612,7 @@ have any review in \code{recommendations.csv}, so that group can only return sev
 
 Hadoop's web interfaces were kept open while the jobs ran.
 
-\shot{../screenshots/web_yarn_applications.png}{YARN ResourceManager (\code{localhost:8088}): all 19
+\shot{\shotdir/web_yarn_applications.png}{YARN ResourceManager (\code{localhost:8088}): all 19
 applications finished with status SUCCEEDED.}
 
 The 19 applications are the three MapReduce jobs and the MapReduce jobs Pig generated for the five
@@ -605,10 +620,10 @@ scripts. Scripts 4 and 5 appear twice: they were run once, then run again after 
 hours are printed (from Pig's default scientific notation to one decimal place). The second runs are
 the ones in this report.
 
-\shot{../screenshots/web_jobhistory.png}{MapReduce JobHistory server (\code{localhost:19888}) with the
+\shot{\shotdir/web_jobhistory.png}{MapReduce JobHistory server (\code{localhost:19888}) with the
 map and reduce task counts of every job.}
-\shot{../screenshots/web_namenode_overview.png}{NameNode overview (\code{localhost:9870}).}
-\shot{../screenshots/web_hdfs_steam.png}{The \code{/steam} directory in the HDFS browser: the three input
+\shot{\shotdir/web_namenode_overview.png}{NameNode overview (\code{localhost:9870}).}
+\shot{\shotdir/web_hdfs_steam.png}{The \code{/steam} directory in the HDFS browser: the three input
 files and the output directories of every job.}
 
 % ---------------------------------------------------------------------------
