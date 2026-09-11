@@ -1,0 +1,8 @@
+$ ./scripts/build.sh && ls -l */*.jar
+built GameReviewSummary/GameReviewSummary.jar
+built BinningByRating/BinningByRating.jar
+built GameReviewJoin/GameReviewJoin.jar
+-rw-rw-r-- 1 rii rii 2849 Sep 11 20:18 BinningByRating/BinningByRating.jar
+-rw-rw-r-- 1 rii rii 6076 Sep 11 20:18 GameReviewJoin/GameReviewJoin.jar
+-rw-rw-r-- 1 rii rii 4996 Sep 11 20:18 GameReviewSummary/GameReviewSummary.jar
+__EXIT__=0

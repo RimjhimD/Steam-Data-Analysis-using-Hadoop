@@ -1,0 +1,68 @@
+$ hadoop jar BinningByRating/BinningByRating.jar steam.binning.BinningByRating /steam/games.csv /steam/out_binning
+2026-09-11 20:18:19,061 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2026-09-11 20:18:19,504 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-09-11 20:18:19,968 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2026-09-11 20:18:19,991 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/rii/.staging/job_1789136053647_0001
+2026-09-11 20:18:20,216 INFO input.FileInputFormat: Total input files to process : 1
+2026-09-11 20:18:20,298 INFO mapreduce.JobSubmitter: number of splits:1
+2026-09-11 20:18:20,457 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1789136053647_0001
+2026-09-11 20:18:20,457 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-09-11 20:18:20,612 INFO conf.Configuration: resource-types.xml not found
+2026-09-11 20:18:20,612 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-09-11 20:18:21,412 INFO impl.YarnClientImpl: Submitted application application_1789136053647_0001
+2026-09-11 20:18:21,444 INFO mapreduce.Job: The url to track the job: http://pop-os:8088/proxy/application_1789136053647_0001/
+2026-09-11 20:18:21,444 INFO mapreduce.Job: Running job: job_1789136053647_0001
+2026-09-11 20:18:29,550 INFO mapreduce.Job: Job job_1789136053647_0001 running in uber mode : false
+2026-09-11 20:18:29,551 INFO mapreduce.Job:  map 0% reduce 0%
+2026-09-11 20:18:34,624 INFO mapreduce.Job:  map 100% reduce 0%
+2026-09-11 20:18:35,641 INFO mapreduce.Job: Job job_1789136053647_0001 completed successfully
+2026-09-11 20:18:35,704 INFO mapreduce.Job: Counters: 42
+	File System Counters
+		FILE: Number of bytes read=0
+		FILE: Number of bytes written=310351
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=4863892
+		HDFS: Number of bytes written=4863668
+		HDFS: Number of read operations=15
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=18
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=1
+		Data-local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=8367
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=2789
+		Total vcore-milliseconds taken by all map tasks=2789
+		Total megabyte-milliseconds taken by all map tasks=2141952
+	Map-Reduce Framework
+		Map input records=50873
+		Map output records=0
+		Input split bytes=102
+		Spilled Records=0
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=9
+		CPU time spent (ms)=2680
+		Physical memory (bytes) snapshot=316841984
+		Virtual memory (bytes) snapshot=2559520768
+		Total committed heap usage (bytes)=260046848
+		Peak Map Physical memory (bytes)=316841984
+		Peak Map Virtual memory (bytes)=2559520768
+	Bins
+		Mixed=12157
+		Mostly Negative=1849
+		Mostly Positive=8738
+		Negative=303
+		Overwhelmingly Negative=14
+		Overwhelmingly Positive=1110
+		Positive=13502
+		Very Negative=60
+		Very Positive=13139
+	File Input Format Counters 
+		Bytes Read=4863790
+	File Output Format Counters 
+		Bytes Written=0
+__EXIT__=0

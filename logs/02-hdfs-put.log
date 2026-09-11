@@ -1,0 +1,8 @@
+$ hdfs dfs -mkdir -p /steam && cd dataset && time hdfs dfs -put -f games.csv users.csv recommendations.csv /steam/
+2026-09-11 20:15:27,306 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2026-09-11 20:15:28,552 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+real	0m11.513s
+user	0m8.256s
+sys	0m4.015s
+__EXIT__=0

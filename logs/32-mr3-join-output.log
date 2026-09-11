@@ -1,0 +1,17 @@
+$ hdfs dfs -ls /steam/out_join && hdfs dfs -cat /steam/out_join/part-r-00000 | sort -t$'\t' -k6 -gr | head -10
+2026-09-11 20:23:22,534 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 2 items
+-rw-r--r--   1 rii supergroup          0 2026-09-11 20:22 /steam/out_join/_SUCCESS
+-rw-r--r--   1 rii supergroup    2155580 2026-09-11 20:22 /steam/out_join/part-r-00000
+2026-09-11 20:23:23,525 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+440	Team Fortress 2	Very Positive	319492	92.3	101809977.6	318.7
+730	Counter-Strike: Global Offensive	Very Positive	219737	84.8	94260307.3	429.0
+570	Dota 2	Very Positive	216914	79.2	93072785.4	429.1
+252490	Rust	Very Positive	270684	83.6	92944004.6	343.4
+359550	Tom Clancy's Rainbow Six® Siege	Very Positive	189603	81.9	68445823.3	361.0
+1085660	Destiny 2	Very Positive	185527	81.9	62504172.8	336.9
+394360	Hearts of Iron IV	Very Positive	143187	91.3	53086631.1	370.8
+346110	ARK: Survival Evolved	Very Positive	159736	79.6	46720359.4	292.5
+230410	Warframe	Very Positive	127812	88.0	46450175.3	363.4
+271590	Grand Theft Auto V	Very Positive	163909	68.3	46170394.5	281.7
+__EXIT__=0

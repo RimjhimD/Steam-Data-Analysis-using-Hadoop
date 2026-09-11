@@ -1,0 +1,12 @@
+$ hdfs dfs -ls -h /steam && hdfs fsck /steam -files -blocks | grep -E 'recommendations.csv|Total blocks|Status'
+2026-09-11 20:15:40,134 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 3 items
+-rw-r--r--   1 rii supergroup      4.6 M 2026-09-11 20:15 /steam/games.csv
+-rw-r--r--   1 rii supergroup      1.9 G 2026-09-11 20:15 /steam/recommendations.csv
+-rw-r--r--   1 rii supergroup    184.1 M 2026-09-11 20:15 /steam/users.csv
+2026-09-11 20:15:41,784 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Connecting to namenode via http://localhost:9870/fsck?ugi=rii&files=1&blocks=1&path=%2Fsteam
+/steam/recommendations.csv 2023223067 bytes, replicated: replication=1, 16 block(s):  OK
+Status: HEALTHY
+ Total blocks (validated):	19 (avg. block size 116902888 B)
+__EXIT__=0

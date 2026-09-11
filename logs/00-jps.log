@@ -1,0 +1,9 @@
+$ jps
+799676 ResourceManager
+800252 JobHistoryServer
+799581 SecondaryNameNode
+799293 NameNode
+800622 Jps
+799401 DataNode
+799792 NodeManager
+__EXIT__=0

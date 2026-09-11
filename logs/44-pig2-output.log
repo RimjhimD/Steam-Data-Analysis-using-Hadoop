@@ -1,0 +1,13 @@
+$ hdfs dfs -cat /steam/pig/Top10Reviewed/part-*
+2026-09-11 20:25:26,494 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+730	Counter-Strike: Global Offensive	Very Positive	88	7494460
+578080	PUBG: BATTLEGROUNDS	Mixed	57	2217226
+570	Dota 2	Very Positive	82	2045628
+271590	Grand Theft Auto V	Very Positive	86	1484122
+359550	Tom Clancy's Rainbow Six® Siege	Very Positive	86	993312
+440	Team Fortress 2	Very Positive	93	985819
+105600	Terraria	Overwhelmingly Positive	97	943413
+4000	Garry's Mod	Overwhelmingly Positive	96	853733
+252490	Rust	Very Positive	87	786668
+1172470	Apex Legends™	Very Positive	80	713182
+__EXIT__=0

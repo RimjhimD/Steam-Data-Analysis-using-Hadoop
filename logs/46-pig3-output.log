@@ -1,0 +1,93 @@
+$ hdfs dfs -cat /steam/pig/Top10ReviewedByRating/part-*
+2026-09-11 20:26:01,175 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Mixed	578080	PUBG: BATTLEGROUNDS	2217226
+Mixed	1938090	Call of Duty®	429206
+Mixed	433850	Z1 Battle Royale	207328
+Mixed	1468810	鬼谷八荒 Tale of Immortal	185051
+Mixed	1517290	Battlefield™ 2042	153151
+Mixed	227940	Heroes & Generals	141919
+Mixed	1811260	EA SPORTS™ FIFA 23	113742
+Mixed	304390	FOR HONOR™	82277
+Mixed	291480	Warface	80549
+Mixed	397900	Business Tour - Board Game with Online Multiplayer	65424
+Negative	364710	Wonky Pigeon!	47
+Negative	273800	Forestry 2017 - The Simulation	47
+Negative	345710	Damned Nation Reborn	45
+Negative	1829586	HITMAN 3 - Seven Deadly Sins Act 7: Wrath	44
+Negative	310880	Basketball Pro Management 2015	44
+Negative	210490	Fray: Reloaded Edition	42
+Negative	925670	Dungeon Kitty	42
+Negative	280380	Uprising44: The Silent Shadows	42
+Negative	519180	Streamer Simulator	42
+Negative	315330	All Guns On Deck	42
+Positive	591760	HyperBrawl Tournament	49
+Positive	1710750	Slit Mouthed - 口裂け女	49
+Positive	1947750	Queen's Wish 2: The Tormentor	49
+Positive	1727930	Gorge	49
+Positive	1260130	Banana Hell	49
+Positive	1202770	kirakira stars idol project AI	49
+Positive	769680	愛神餐館2	49
+Positive	1714190	Breakout: Recharged	49
+Positive	2167451	Monster Hunter Rise - 'Ran Page' Hunter layered armor set	49
+Positive	588930	King 'n Knight	49
+Very Negative	2338770	NBA 2K24	439
+Very Negative	422420	Godus Wars	425
+Very Negative	238870	Citadels	365
+Very Negative	2280000	SQUARE ENIX AI Tech Preview: THE PORTOPIA SERIAL MURDER CASE	341
+Very Negative	2205894	Wo Long: Fallen Dynasty Battle of Zhongyuan	338
+Very Negative	246940	Lords of the Black Sun	324
+Very Negative	273770	Game Tycoon 1.5	317
+Very Negative	1090184	NTBSS Top Secret Training Set - Season Pass 3 Characters	269
+Very Negative	875950	CODE VEIN: Frozen Empress	267
+Very Negative	252910	Skyscraper Simulator	262
+Very Positive	730	Counter-Strike: Global Offensive	7494460
+Very Positive	570	Dota 2	2045628
+Very Positive	271590	Grand Theft Auto V	1484122
+Very Positive	359550	Tom Clancy's Rainbow Six® Siege	993312
+Very Positive	440	Team Fortress 2	985819
+Very Positive	252490	Rust	786668
+Very Positive	1172470	Apex Legends™	713182
+Very Positive	945360	Among Us	587821
+Very Positive	1085660	Destiny 2	562723
+Very Positive	1091500	Cyberpunk 2077	557051
+Mostly Negative	1832640	Mirror 2: Project X	110981
+Mostly Negative	1665460	eFootball™ 2024	59071
+Mostly Negative	1272080	PAYDAY 3	29458
+Mostly Negative	1962663	Call of Duty®: Warzone™ 2.0	19770
+Mostly Negative	1367080	MOBILE SUIT GUNDAM BATTLE OPERATION 2	15685
+Mostly Negative	1504570	Cultivation Tales	12299
+Mostly Negative	730310	DYNASTY WARRIORS 9	9363
+Mostly Negative	1945340	Destiny 2: Lightfall	7343
+Mostly Negative	1336350	Elite Dangerous: Odyssey	7011
+Mostly Negative	1816570	江湖十一	4772
+Mostly Positive	236390	War Thunder	393681
+Mostly Positive	221100	DayZ	296845
+Mostly Positive	1063730	New World	222345
+Mostly Positive	275850	No Man's Sky	209971
+Mostly Positive	438100	VRChat	202265
+Mostly Positive	1599340	Lost Ark	194889
+Mostly Positive	1203220	NARAKA: BLADEPOINT	163924
+Mostly Positive	1240440	Halo Infinite	161274
+Mostly Positive	1238810	Battlefield™ V	141836
+Mostly Positive	552990	World of Warships	129335
+Overwhelmingly Negative	2357570	Overwatch® 2	181198
+Overwhelmingly Negative	1180320	War of the Three Kingdoms	21276
+Overwhelmingly Negative	1416420	Expansion - Europa Universalis IV: Leviathan	4723
+Overwhelmingly Negative	246090	Spacebase DF-9	3261
+Overwhelmingly Negative	201510	Flatout 3: Chaos & Destruction	2766
+Overwhelmingly Negative	1850380	Tricolour Lovestory TrueEnd	1739
+Overwhelmingly Negative	2016940	O2Jam Online	1689
+Overwhelmingly Negative	227160	Kinetic Void	1381
+Overwhelmingly Negative	512032	Sid Meier's Civilization® VI: Vikings Scenario Pack	1184
+Overwhelmingly Negative	1563130	SuperPower 3	880
+Overwhelmingly Positive	105600	Terraria	943413
+Overwhelmingly Positive	4000	Garry's Mod	853733
+Overwhelmingly Positive	292030	The Witcher® 3: Wild Hunt	668455
+Overwhelmingly Positive	431960	Wallpaper Engine	637341
+Overwhelmingly Positive	550	Left 4 Dead 2	574470
+Overwhelmingly Positive	413150	Stardew Valley	505882
+Overwhelmingly Positive	227300	Euro Truck Simulator 2	494214
+Overwhelmingly Positive	739630	Phasmophobia	486466
+Overwhelmingly Positive	242760	The Forest	416113
+Overwhelmingly Positive	892970	Valheim	356617
+__EXIT__=0

@@ -1,0 +1,29 @@
+$ hdfs dfs -ls /steam/out_binning && hdfs dfs -cat /steam/out_binning/OverwhelminglyNegative-m-00000
+2026-09-11 20:18:45,564 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 10 items
+-rw-r--r--   1 rii supergroup    1090434 2026-09-11 20:18 /steam/out_binning/Mixed-m-00000
+-rw-r--r--   1 rii supergroup     185177 2026-09-11 20:18 /steam/out_binning/MostlyNegative-m-00000
+-rw-r--r--   1 rii supergroup     872438 2026-09-11 20:18 /steam/out_binning/MostlyPositive-m-00000
+-rw-r--r--   1 rii supergroup      28067 2026-09-11 20:18 /steam/out_binning/Negative-m-00000
+-rw-r--r--   1 rii supergroup       1570 2026-09-11 20:18 /steam/out_binning/OverwhelminglyNegative-m-00000
+-rw-r--r--   1 rii supergroup     119286 2026-09-11 20:18 /steam/out_binning/OverwhelminglyPositive-m-00000
+-rw-r--r--   1 rii supergroup    1273597 2026-09-11 20:18 /steam/out_binning/Positive-m-00000
+-rw-r--r--   1 rii supergroup       6409 2026-09-11 20:18 /steam/out_binning/VeryNegative-m-00000
+-rw-r--r--   1 rii supergroup    1286690 2026-09-11 20:18 /steam/out_binning/VeryPositive-m-00000
+-rw-r--r--   1 rii supergroup          0 2026-09-11 20:18 /steam/out_binning/_SUCCESS
+2026-09-11 20:18:47,024 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+1180320,War of the Three Kingdoms,2021-12-17,true,false,false,Overwhelmingly Negative,15,21276,0.0,0.0,0.0,true
+1416420,Expansion - Europa Universalis IV: Leviathan,2021-04-27,true,true,true,Overwhelmingly Negative,10,4723,19.99,19.99,0.0,true
+512032,Sid Meier's Civilization® VI: Vikings Scenario Pack,2016-12-20,true,true,true,Overwhelmingly Negative,15,1184,0.0,0.0,0.0,true
+2357570,Overwatch® 2,2023-08-10,true,false,false,Overwhelmingly Negative,9,181198,0.0,0.0,0.0,true
+1850380,Tricolour Lovestory TrueEnd,2022-01-27,true,false,false,Overwhelmingly Negative,14,1739,0.99,0.99,0.0,true
+2016940,O2Jam Online,2023-01-16,true,false,false,Overwhelmingly Negative,17,1689,0.0,0.0,0.0,true
+1799220,Malice,2022-11-02,true,false,false,Overwhelmingly Negative,16,723,7.99,7.99,0.0,true
+267600,Airport Simulator 2014,2013-12-19,true,false,false,Overwhelmingly Negative,13,553,4.99,4.99,0.0,true
+1563130,SuperPower 3,2022-10-07,true,false,false,Overwhelmingly Negative,10,880,29.99,29.99,0.0,true
+201510,Flatout 3: Chaos & Destruction,2011-12-13,true,false,false,Overwhelmingly Negative,15,2766,9.99,9.99,0.0,true
+1162602,TEKKEN 7 - DLC13: Frame Data Display,2019-12-10,true,false,false,Overwhelmingly Negative,14,605,1.49,2.99,50.0,true
+246090,Spacebase DF-9,2014-10-27,true,true,true,Overwhelmingly Negative,18,3261,9.99,9.99,0.0,true
+573831,Tom Clancy's Ghost Recon® Wildlands - Narco Road,2017-04-25,true,false,false,Overwhelmingly Negative,16,564,14.99,14.99,0.0,true
+227160,Kinetic Void,2014-11-21,true,true,true,Overwhelmingly Negative,17,1381,19.99,19.99,0.0,true
+__EXIT__=0

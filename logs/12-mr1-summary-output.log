@@ -1,0 +1,17 @@
+$ hdfs dfs -ls /steam/out_summary && hdfs dfs -cat /steam/out_summary/part-r-00000 | sort -t$'\t' -k2 -nr | head -10
+2026-09-11 20:21:28,716 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 2 items
+-rw-r--r--   1 rii supergroup          0 2026-09-11 20:20 /steam/out_summary/_SUCCESS
+-rw-r--r--   1 rii supergroup    1441145 2026-09-11 20:20 /steam/out_summary/part-r-00000
+2026-09-11 20:21:29,853 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+440	319492	294879	92.3	101809977.6	318.7	999.9	521978
+252490	270684	226293	83.6	92944004.6	343.4	999.9	771227
+1091500	226414	168631	74.5	23146491.9	102.2	999.1	1189869
+730	219737	186306	84.8	94260307.3	429.0	999.9	1910071
+570	216914	171841	79.2	93072785.4	429.1	999.9	842346
+444090	204176	171516	84.0	28549772.6	139.8	999.9	188983
+292030	204166	193139	94.6	31522739.6	154.4	999.9	813793
+377160	196789	160497	81.6	40149411.3	204.0	999.9	899972
+374320	190157	176742	92.9	32467657.9	170.7	999.9	529674
+431960	190129	186792	98.2	19547974.7	102.8	999.8	802753
+__EXIT__=0

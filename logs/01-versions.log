@@ -1,0 +1,5 @@
+$ hadoop version | head -1; pig -version 2>&1 | grep -i 'Apache Pig'; java -version 2>&1 | head -1
+Hadoop 3.4.1
+Apache Pig version 0.18.0 (r1926484) 
+openjdk version "11.0.31" 2026-04-21
+__EXIT__=0

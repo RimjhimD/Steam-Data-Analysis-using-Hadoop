@@ -1,0 +1,8 @@
+$ hdfs dfs -cat /steam/pig/Top5Ratings/part-*
+2026-09-11 20:24:36,177 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Positive	13502
+Very Positive	13139
+Mixed	12157
+Mostly Positive	8738
+Mostly Negative	1849
+__EXIT__=0
