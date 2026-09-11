@@ -17,6 +17,7 @@
 \usepackage{listings}
 \usepackage[normalem]{ulem}
 \usepackage{titlesec}
+\usepackage{needspace}
 \usepackage{caption}
 \usepackage{fancyhdr}
 \usepackage{pdfpages}
@@ -31,9 +32,9 @@
 \definecolor{codebg}{HTML}{F7F7F5}
 \definecolor{rule}{HTML}{D9D9D6}
 
-\titleformat{\section}{\color{secblue}\LARGE\bfseries}{\thesection.}{0.5em}{\uline}
-\titleformat{\subsection}{\color{jobred}\Large\bfseries}{\thesubsection}{0.5em}{\uline}
-\titleformat{\subsubsection}{\color{subgreen}\large\bfseries}{}{0em}{}
+\titleformat{\section}{\needspace{6\baselineskip}\color{secblue}\LARGE\bfseries}{\thesection.}{0.5em}{\uline}
+\titleformat{\subsection}{\needspace{6\baselineskip}\color{jobred}\Large\bfseries}{\thesubsection}{0.5em}{\uline}
+\titleformat{\subsubsection}{\needspace{5\baselineskip}\color{subgreen}\large\bfseries}{}{0em}{}
 \titlespacing*{\subsubsection}{0pt}{1.4ex plus .4ex}{0.6ex}
 \setcounter{tocdepth}{2}
 \setlength{\parskip}{0.55em}
@@ -50,7 +51,7 @@
 
 \lstdefinelanguage{Pig}{
   morekeywords={LOAD,USING,AS,FILTER,BY,IS,NOT,NULL,GROUP,ALL,FOREACH,GENERATE,ORDER,DESC,
-                LIMIT,FLATTEN,STORE,INTO,JOIN,COUNT,SUM,ROUND_TO,PigStorage,int,chararray,double},
+                LIMIT,FLATTEN,STORE,INTO,JOIN,COUNT,SUM,SPRINTF,PigStorage,int,chararray,double},
   sensitive=false, morecomment=[l]{--}, morestring=[b]'
 }
 \lstset{
@@ -68,6 +69,9 @@
   \includegraphics[width=\linewidth,height=0.80\textheight,keepaspectratio]{#1}
   \caption{#2}\end{figure}}
 \newcommand{\code}[1]{\texttt{#1}}
+% a Pig script is short: never split it across two pages
+\newcommand{\pigscript}[1]{\par\noindent\begin{minipage}{\linewidth}
+  \subsubsection*{Script}\lstinputlisting[language=Pig]{#1}\end{minipage}\par}
 
 \begin{document}
 
@@ -273,7 +277,7 @@ maximum — so partial results can be merged in any order. That is what makes a 
 valid here: each mapper merges its own tuples before the shuffle, and the reducer finishes the job
 with exactly the same code.
 
-This analysis comprises of:
+This analysis consists of:
 \begin{enumerate}
   \item \textbf{Driver Class} — sets up the job, and registers the reducer as the combiner as well.
   \item \textbf{Mapper Class} — emits \code{app\_id} of type \code{Text} and a tuple of custom type
@@ -342,7 +346,7 @@ mapper decides which bin a record belongs to and writes it straight to that bin'
 and a counter per bin records how many games landed in it. \code{LazyOutputFormat} stops Hadoop from
 also writing an empty default \code{part-m-00000} file.
 
-This analysis comprises of:
+This analysis consists of:
 \begin{enumerate}
   \item \textbf{Driver Class} — sets zero reducers and registers the \code{bins} named output.
   \item \textbf{Mapper Class} — uses \code{MultipleOutputs} to write each game to the file of its rating
@@ -403,7 +407,7 @@ uses \textbf{in-mapper combining}: it keeps a running total per game in a hash m
 \code{R} record per game when its input split is done. The join is an inner join — games nobody
 reviewed, and reviews whose game is missing from \code{games.csv}, are dropped and counted.
 
-This analysis comprises of:
+This analysis consists of:
 \begin{enumerate}
   \item \textbf{Driver Class} — registers the two inputs, each with its own mapper, and one reducer.
   \item \textbf{Game Mapper} — emits \code{app\_id} and \code{"G, title, rating"}.
@@ -481,8 +485,7 @@ The games are grouped by \code{rating} and counted; the nine counts are then gat
 group (\code{GROUP \dots\ ALL}) so they can be sorted together and cut to five. Pig compiles the script
 into two MapReduce jobs — the count, which runs with a combiner, and the ranking.
 
-\subsubsection*{Script}
-\lstinputlisting[language=Pig]{../PigAnalysis/scripts/top5Ratings.pig}
+\pigscript{../PigAnalysis/scripts/top5Ratings.pig}
 \subsubsection*{Execution}
 \shot{../screenshots/Pig1_execution.png}{\code{top5Ratings.pig} starting in \code{mapreduce} mode.}
 \shot{../screenshots/Pig1_result.png}{End of the run: \code{Success!}, the two jobs, 50,873 records read and 5 stored.}
@@ -496,8 +499,7 @@ The five counts are identical to the first five bins of the MapReduce binning jo
 \subsection{Top 10 Most Reviewed Games}
 \textbf{Returns the ten games with the most reviews on Steam} (the \code{user\_reviews} column).
 
-\subsubsection*{Script}
-\lstinputlisting[language=Pig]{../PigAnalysis/scripts/top10Reviewed.pig}
+\pigscript{../PigAnalysis/scripts/top10Reviewed.pig}
 \subsubsection*{Execution}
 \shot{../screenshots/Pig2_execution.png}{\code{top10Reviewed.pig} starting.}
 \shot{../screenshots/Pig2_result.png}{End of the run: one MapReduce job, 10 records stored in 48 seconds.}
@@ -521,8 +523,7 @@ This is the nested-\code{FOREACH} pattern: after \code{GROUP BY rating}, the blo
 sorts that group's bag by \code{user\_reviews}, keeps ten and \code{FLATTEN}s them back into rows. The
 whole script runs as a single MapReduce job.
 
-\subsubsection*{Script}
-\lstinputlisting[language=Pig]{../PigAnalysis/scripts/top10ReviewedByRating.pig}
+\pigscript{../PigAnalysis/scripts/top10ReviewedByRating.pig}
 \subsubsection*{Execution}
 \shot{../screenshots/Pig3_execution.png}{\code{top10ReviewedByRating.pig} starting.}
 \shot{../screenshots/Pig3_result.png}{End of the run: 90 records stored — nine groups of ten.}
@@ -552,8 +553,7 @@ screenshot below): a map-only job that prepares \code{games.csv} for the replica
 15 maps and 3 reducers that groups the 41 million reviews and performs the join, and a final job
 that ranks the result.
 
-\subsubsection*{Script}
-\lstinputlisting[language=Pig]{../PigAnalysis/scripts/top10Played.pig}
+\pigscript{../PigAnalysis/scripts/top10Played.pig}
 \subsubsection*{Execution}
 \shot{../screenshots/Pig4_execution.png}{\code{top10Played.pig} starting.}
 \shot{../screenshots/Pig4_result.png}{End of the run: 41,154,795 review lines and 50,873 game lines
@@ -578,8 +578,7 @@ job and shrinks its shuffle with in-mapper combining.
 Same first half as the previous script — sum the hours per game and replicated-join the titles and
 ratings — followed by the nested sort of Section 6.3, grouped by rating.
 
-\subsubsection*{Script}
-\lstinputlisting[language=Pig]{../PigAnalysis/scripts/top10PlayedByRating.pig}
+\pigscript{../PigAnalysis/scripts/top10PlayedByRating.pig}
 \subsubsection*{Execution}
 \shot{../screenshots/Pig5_execution.png}{\code{top10PlayedByRating.pig} starting.}
 \shot{../screenshots/Pig5_result.png}{End of the run: 87 records stored, in 4 minutes 3 seconds.}
