@@ -10,14 +10,11 @@
   replicated join over the full review table.
 - Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
 
-Lab report (LaTeX, 21 pages with the cover): [`SteamDataAnalysisProject.pdf`](SteamDataAnalysisProject.pdf)
+Lab report (LaTeX, 21 pages with the cover, black and white for printing):
+[`report/SteamDataAnalysisProject.pdf`](report/SteamDataAnalysisProject.pdf)
 
-Black-and-white edition for mono printers (same content, black-on-white screenshots and charts):
-[`SteamDataAnalysisProject-print.pdf`](SteamDataAnalysisProject-print.pdf)
-
-Full-length edition (49 pages — every code listing with imports, every job log screenshot at full length):
-[`SteamDataAnalysisProject-full.pdf`](SteamDataAnalysisProject-full.pdf) ·
-black-and-white: [`SteamDataAnalysisProject-full-print.pdf`](SteamDataAnalysisProject-full-print.pdf)
+Earlier versions — the colour copy and the 49-page full-length edition — are in
+[`Demo Report/`](Demo%20Report/).
 
 ### Problem Statement :-
 
@@ -231,12 +228,9 @@ Charts are drawn by [`visualizations/make_charts.py`](visualizations/make_charts
 ├── screenshots/             cluster, job runs, outputs and Hadoop web UIs (print/ = black-on-white)
 ├── visualizations/          charts of the Pig results + the script that draws them (print/ = greyscale)
 ├── logs/                    full console output of every command that was run
-├── report/                  LaTeX source of the report
 ├── scripts/build.sh         compiles the three jars
-├── SteamDataAnalysisProject.pdf             the report, 21 pages (colour)
-├── SteamDataAnalysisProject-print.pdf       the report, 21 pages (black and white)
-├── SteamDataAnalysisProject-full.pdf        full-length edition, 49 pages (colour)
-└── SteamDataAnalysisProject-full-print.pdf  full-length edition, 49 pages (black and white)
+├── report/                  the final report: SteamDataAnalysisProject.pdf + its LaTeX source
+└── Demo Report/             earlier versions: colour copy, 49-page full-length edition
 ```
 
 *Rimjhim Dey*
