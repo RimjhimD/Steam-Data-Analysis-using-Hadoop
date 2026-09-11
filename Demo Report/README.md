@@ -6,6 +6,8 @@ The final report is [`../report/SteamDataAnalysisProject.pdf`](../report/SteamDa
 | File | Pages | What it is |
 |---|---:|---|
 | `SteamDataAnalysisProject-21-pages-colour.pdf` | 21 | the final report in colour, for reading on screen |
+| `SteamDataAnalysisProject-21-pages-draft-print.pdf` | 21 | first 21-page draft (black and white), before the contents page got its own page |
+| `SteamDataAnalysisProject-21-pages-draft-colour.pdf` | 21 | the same draft in colour |
 | `SteamDataAnalysisProject-49-pages-colour.pdf` | 49 | first full-length edition: every code listing with its imports and every job log at full length |
 | `SteamDataAnalysisProject-49-pages-print.pdf` | 49 | the full-length edition in black and white |
 | `SteamDataAnalysisReport-full.tex` | | LaTeX source of the full-length edition |

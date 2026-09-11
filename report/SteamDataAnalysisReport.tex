@@ -110,6 +110,8 @@
 \includepdf[pages=1]{cover.pdf}
 
 \tableofcontents
+\thispagestyle{fancy}
+\newpage
 
 % ---------------------------------------------------------------------------
 \section{Problem Statement}
@@ -273,6 +275,7 @@ screenshots are in \code{screenshots/}. Import statements are left out of the co
 numbers are those of the source files.
 
 % ---------------------------------------------------------------------------
+\newpage
 \section{Map Reduce Analysis}
 
 \subsection{Review Summary per Game — Summarization}
@@ -521,10 +524,9 @@ in this report.
 % ---------------------------------------------------------------------------
 \section{Verification}
 
-Different jobs reach several of the same numbers by different routes, so the results can be checked
-against each other and against the raw file. All checks passed. The bin sizes were also counted
-straight from the CSV before any job ran, and the Pig-versus-MapReduce top ten was compared with
-\code{diff}.
+Several numbers are reached by more than one job, so the results can be checked against each other
+and the raw file; all checks passed. Bin sizes were also counted straight from the CSV before any
+job ran, and the two top-ten lists were compared with \code{diff}.
 
 \begin{table}[H]\centering\footnotesize
 \begin{tabularx}{\linewidth}{X r r c}
@@ -585,9 +587,11 @@ for the same answer. The two tools agreed on every result they share, which is t
 that both are correct.
 
 % ---------------------------------------------------------------------------
+\enlargethispage{2\baselineskip}  % keep the last reference on the final page
 \section*{References}
 \addcontentsline{toc}{section}{References}
-\begin{enumerate}[label={[\arabic*]}]
+{\footnotesize
+\begin{enumerate}[label={[\arabic*]}, itemsep=0pt]
   \item A.\ Kozyriev, \emph{Game Recommendations on Steam}, Kaggle dataset.
         \url{https://www.kaggle.com/datasets/antonkozyriev/game-recommendations-on-steam}
   \item S.\ Prabhu, \emph{YouTube Data Analysis using Hadoop} (project structure followed).
@@ -595,6 +599,6 @@ that both are correct.
   \item D.\ Miner and A.\ Shook, \emph{MapReduce Design Patterns}, O'Reilly, 2012.
   \item Apache Hadoop 3.4.1 documentation. \url{https://hadoop.apache.org/docs/r3.4.1/}
   \item Apache Pig 0.18.0 documentation. \url{https://pig.apache.org/docs/latest/}
-\end{enumerate}
+\end{enumerate}}
 
 \end{document}
