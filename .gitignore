@@ -27,9 +27,7 @@ Thumbs.db
 *~
 .playwright-mcp/
 
-# The compiled report is kept once, at the repo root (SteamDataAnalysisProject.pdf)
+# only the finished report and its cover are kept; tectonic's other builds are not
 report/*.pdf
 !report/cover.pdf
 !report/SteamDataAnalysisProject.pdf
-# test builds of the old full-length edition
-Demo Report/SteamDataAnalysisReport-full*.pdf
