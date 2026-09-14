@@ -1,27 +1,59 @@
-# Steam Game Recommendations Analysis - MapReduce Design Patterns using Apache Hadoop, Pig
+# Steam Game Recommendations Analysis — MapReduce Design Patterns using Apache Hadoop and Pig
 
-## Big Data Analysis Laboratory (CSE 4346) final project.
+**Big Data Analysis Laboratory (CSE 4346) — final project**
 
-- Used the Apache Hadoop framework (HDFS and YARN) to analyse a 2.2 GB, three-table Steam dataset with
-  41 million user reviews.
-- Wrote three Java MapReduce programs, each built on a different MapReduce design pattern:
-  summarization, data organization (binning) and a reduce-side join.
-- Wrote five Apache Pig Latin scripts for ranking and grouping questions, including a map-side
-  replicated join over the full review table.
-- Charted every Pig result and cross-checked the Pig and MapReduce answers against each other.
+This project analyses a 2.2 GB Steam dataset of 41 million user reviews on an Apache Hadoop cluster.
+The data is stored in HDFS and processed by YARN, first with three Java MapReduce programs — each
+written on a different MapReduce design pattern — and then with five Apache Pig Latin scripts that
+ask ranking and grouping questions of the same data. Every Pig result is charted, and the answers the
+two engines share are compared against each other to confirm both are correct.
 
-Lab report (LaTeX, 21 pages with the cover, black and white for printing):
-[`report/SteamDataAnalysisProject.pdf`](report/SteamDataAnalysisProject.pdf)
+- **Cluster:** single-node Apache Hadoop 3.4.1 (HDFS + YARN), Apache Pig 0.18.0, OpenJDK 11.
+- **MapReduce:** summarization with a custom `Writable` and a combiner, data organization (binning)
+  with `MultipleOutputs`, and a reduce-side join with `MultipleInputs`.
+- **Pig:** five scripts, including a map-side replicated join over the full 41-million-row review table.
+- **Report:** [`report/SteamDataAnalysisProject.pdf`](report/SteamDataAnalysisProject.pdf) — the lab
+  report, written in LaTeX.
 
-Earlier versions — the colour copy and the 49-page full-length edition — are in
-[`Demo Report/`](Demo%20Report/).
+## Repository structure
 
-### Problem Statement :-
+```
+Steam-Data-Analysis-using-Hadoop/
+├── dataset/                  schema and download instructions for the Steam dataset
+├── GameReviewSummary/        MapReduce 1 — review summary per game (summarization)
+├── BinningByRating/          MapReduce 2 — binning games by rating (data organization)
+├── GameReviewJoin/           MapReduce 3 — games joined with their reviews (reduce-side join)
+├── PigAnalysis/scripts/      the five Pig Latin scripts
+├── MR Results/outputFiles/   MapReduce job outputs, read back from HDFS
+├── Pig Results/outputFiles/  Pig script outputs, read back from HDFS
+├── screenshots/              cluster, job runs, outputs and the Hadoop web interfaces
+├── visualizations/           charts of the Pig results, and the script that draws them
+├── logs/                     complete console output of every command that was run
+├── scripts/build.sh          compiles the three MapReduce jobs into jars
+└── report/                   the lab report and its LaTeX source
+```
+
+| Folder | What is inside |
+|---|---|
+| `dataset/` | The field-by-field schema of the three tables and the command to download them from Kaggle. The data files are not committed. |
+| `GameReviewSummary/` | Four Java classes (driver, mapper, reducer/combiner and a custom `Writable` tuple) under `src/main/java/steam/summary/`, plus the built jar. |
+| `BinningByRating/` | Two Java classes (driver and mapper) under `src/main/java/steam/binning/`, plus the built jar. |
+| `GameReviewJoin/` | Four Java classes (driver, two mappers and the join reducer) under `src/main/java/steam/join/`, plus the built jar. |
+| `PigAnalysis/scripts/` | Five `.pig` scripts, one per analysis, run with `pig -x mapreduce -f <script>`. |
+| `MR Results/outputFiles/` | The output of each MapReduce job. For the binning job only the first 20 lines of each bin are kept, because the bins together are a full copy of `games.csv`. |
+| `Pig Results/outputFiles/` | The stored output of each of the five Pig scripts. |
+| `screenshots/` | 43 screenshots: the running cluster, the data in HDFS, every job run and its output, and the YARN, JobHistory and HDFS web pages. `print/` holds black-on-white copies used by the report. |
+| `visualizations/` | Five charts built from the Pig results by `make_charts.py`. `print/` holds greyscale copies. |
+| `logs/` | The full console output of all 21 recorded commands, from starting the cluster to the last Pig job. |
+| `report/` | `SteamDataAnalysisProject.pdf` and the LaTeX source it is built from, with the cover page. |
+| `scripts/` | `build.sh`, which compiles each job against the local Hadoop classpath and packages it as a jar. |
+
+## Problem Statement
 
 Analyse the Steam game-recommendations dataset using Hadoop (MapReduce) and Pig, across its game and
 review tables, to find which games and rating groups draw the most reviews and the most hours of play.
 
-### Summary :-
+## Dataset
 
 The dataset is available at:
 
@@ -64,7 +96,7 @@ Following Pig analysis is performed on the dataset (visualizations are in the Pi
 4. Top 10 games by total hours played
 5. Top 10 games by total hours played in each rating group
 
-### Environment :-
+## Environment
 
 | Component | Version / setting |
 |---|---|
@@ -214,23 +246,5 @@ Charts are drawn by [`visualizations/make_charts.py`](visualizations/make_charts
 | Nine bins add up to 50,872 and match counts taken directly from the CSV | pass |
 | Pig top 5 rating groups = five largest bins | pass |
 | Pig top 10 by hours = MapReduce join top 10 (ids, reviews, hours) | pass |
-
-## Repository layout
-
-```
-├── dataset/                 schema and source (data files not committed)
-├── GameReviewSummary/       MapReduce 1 — src/main/java/steam/summary + jar
-├── BinningByRating/         MapReduce 2 — src/main/java/steam/binning + jar
-├── GameReviewJoin/          MapReduce 3 — src/main/java/steam/join + jar
-├── PigAnalysis/scripts/     the five Pig scripts
-├── MR Results/outputFiles/  MapReduce outputs pulled back from HDFS
-├── Pig Results/outputFiles/ Pig outputs pulled back from HDFS
-├── screenshots/             cluster, job runs, outputs and Hadoop web UIs (print/ = black-on-white)
-├── visualizations/          charts of the Pig results + the script that draws them (print/ = greyscale)
-├── logs/                    full console output of every command that was run
-├── scripts/build.sh         compiles the three jars
-├── report/                  the final report: SteamDataAnalysisProject.pdf + its LaTeX source
-└── Demo Report/             earlier versions: colour copy, 49-page full-length edition
-```
 
 *Rimjhim Dey*
