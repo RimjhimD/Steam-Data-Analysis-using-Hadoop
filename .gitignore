@@ -25,7 +25,6 @@ report/**/*.log
 .DS_Store
 Thumbs.db
 *~
-.playwright-mcp/
 
 # only the finished report and its cover are kept; tectonic's other builds are not
 report/*.pdf
