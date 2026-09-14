@@ -42,8 +42,8 @@ Steam-Data-Analysis-using-Hadoop/
 | `PigAnalysis/scripts/` | Five `.pig` scripts, one per analysis, run with `pig -x mapreduce -f <script>`. |
 | `MR Results/outputFiles/` | The output of each MapReduce job. For the binning job only the first 20 lines of each bin are kept, because the bins together are a full copy of `games.csv`. |
 | `Pig Results/outputFiles/` | The stored output of each of the five Pig scripts. |
-| `screenshots/` | 43 screenshots: the running cluster, the data in HDFS, every job run and its output, and the YARN, JobHistory and HDFS web pages. `print/` holds black-on-white copies used by the report. |
-| `visualizations/` | Five charts built from the Pig results by `make_charts.py`. `print/` holds greyscale copies. |
+| `screenshots/` | 43 screenshots: the running cluster, the data in HDFS, every job run and its output, and the YARN, JobHistory and HDFS web pages. |
+| `visualizations/` | Five charts built from the Pig results by `make_charts.py`. |
 | `logs/` | The full console output of all 21 recorded commands, from starting the cluster to the last Pig job. |
 | `report/` | `SteamDataAnalysisProject.pdf` and the LaTeX source it is built from, with the cover page. |
 | `scripts/` | `build.sh`, which compiles each job against the local Hadoop classpath and packages it as a jar. |

@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """Draw one chart per Pig analysis from the outputs in "Pig Results/outputFiles".
 
-usage: python3 visualizations/make_charts.py            (needs matplotlib)
-       python3 visualizations/make_charts.py --print    black-and-white copies in visualizations/print/
+usage: python3 visualizations/make_charts.py      (needs matplotlib)
 """
 import csv
 import glob
 import os
-import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -16,14 +14,12 @@ from matplotlib.ticker import FuncFormatter
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 RESULTS = os.path.join(ROOT, "Pig Results", "outputFiles")
-PRINT = "--print" in sys.argv
-OUT = os.path.join(ROOT, "visualizations", "print") if PRINT else os.path.join(ROOT, "visualizations")
-os.makedirs(OUT, exist_ok=True)
+OUT = os.path.join(ROOT, "visualizations")
 
-BAR = "#555555" if PRINT else "#2a78d6"   # one hue: every chart here is a single series
-INK = "#000000" if PRINT else "#0b0b0b"
-INK_2 = "#333333" if PRINT else "#52514e"
-GRID = "#cccccc" if PRINT else "#e4e3df"
+BAR = "#2a78d6"          # one hue: every chart here is a single series
+INK = "#0b0b0b"
+INK_2 = "#52514e"
+GRID = "#e4e3df"
 SURFACE = "#ffffff"
 
 RATING_ORDER = ["Overwhelmingly Positive", "Very Positive", "Positive", "Mostly Positive",

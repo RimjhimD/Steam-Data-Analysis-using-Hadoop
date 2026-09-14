@@ -1,6 +1,5 @@
 % Steam Game Recommendations — Data Analysis using Apache Hadoop and Pig
 % Lab report (CSE 4346). Compile from this folder:  tectonic SteamDataAnalysisReport.tex
-% Black-and-white print edition:                    tectonic SteamDataAnalysisReport-print.tex
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[a4paper,top=1.7cm,bottom=1.7cm,left=1.8cm,right=1.8cm,headsep=0.35cm,footskip=0.8cm]{geometry}
@@ -35,20 +34,9 @@
 \definecolor{codebg}{HTML}{F7F7F5}
 \definecolor{rule}{HTML}{D9D9D6}
 
-% Black-and-white print edition: SteamDataAnalysisReport-print.tex defines \printversion
-% and points \shotdir / \chartdir at the black-on-white screenshots and charts.
+% image folders, referenced by every figure below
 \providecommand{\shotdir}{../screenshots}
 \providecommand{\chartdir}{../visualizations}
-\ifdefined\printversion
-  \definecolor{secblue}{HTML}{000000}
-  \definecolor{jobred}{HTML}{000000}
-  \definecolor{subgreen}{HTML}{000000}
-  \definecolor{kw}{HTML}{000000}
-  \definecolor{cm}{HTML}{555555}
-  \definecolor{st}{HTML}{333333}
-  \definecolor{codebg}{HTML}{FFFFFF}
-  \definecolor{rule}{HTML}{777777}
-\fi
 
 \titleformat{\section}{\needspace{6\baselineskip}\color{secblue}\Large\bfseries}{\thesection.}{0.5em}{\uline}
 \titleformat{\subsection}{\needspace{6\baselineskip}\color{jobred}\large\bfseries}{\thesubsection}{0.5em}{\uline}
